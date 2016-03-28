@@ -1,0 +1,5 @@
+# set project defaults for text files
+*	text=auto
+
+# Windows files should have CRLF line endings
+*.bat	text	eol=crlf
