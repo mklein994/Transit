@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Transit feeds api: used to fetch GTFS apis from around the world. Please enter your own
+    key. -->
+    <string name="transit_feeds_key" templateMergeStrategy="preserve" translatable="false"></string>
+</resources>
