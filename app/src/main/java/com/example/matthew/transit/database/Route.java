@@ -1,5 +1,6 @@
 package com.example.matthew.transit.database;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -32,4 +33,9 @@ public class Route extends RealmObject {
     private String routeColor;
 
     private String routeTextColor;
+
+    private RealmList<Trip> trips;
+
+    @Ignore
+    private Agency agency;
 }

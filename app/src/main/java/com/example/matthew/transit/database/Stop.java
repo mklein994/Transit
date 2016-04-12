@@ -1,5 +1,6 @@
 package com.example.matthew.transit.database;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -42,4 +43,7 @@ public class Stop extends RealmObject {
 
     @Ignore
     private byte wheelchairBoarding;
+
+    private RealmList<Trip> trips;
+    private RealmList<StopTime> stopTimes;
 }

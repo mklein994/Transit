@@ -1,5 +1,6 @@
 package com.example.matthew.transit.database;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.Required;
@@ -30,4 +31,7 @@ public class Agency extends RealmObject {
 
     @Ignore
     private String agencyEmail;
+
+    @Ignore
+    private RealmList<Route> routes;
 }

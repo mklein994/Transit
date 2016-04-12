@@ -2,6 +2,7 @@ package com.example.matthew.transit.database;
 
 import java.util.Date;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Required;
 
@@ -17,4 +18,7 @@ public class CalendarDate extends RealmObject {
 
     // required
     private byte exceptionType;
+
+    private RealmList<Trip> trips;
+    private RealmList<Calendar> calendars;
 }

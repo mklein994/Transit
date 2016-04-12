@@ -1,5 +1,6 @@
 package com.example.matthew.transit.database;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.Required;
@@ -21,4 +22,8 @@ public class FareRule extends RealmObject {
 
     @Ignore
     private String containsId;
+
+    private RealmList<FareAttribute> fareAttributes;
+    private RealmList<Route> routes;
+    private RealmList<Trip> trips;
 }

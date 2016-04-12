@@ -1,5 +1,6 @@
 package com.example.matthew.transit.database;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -22,4 +23,8 @@ public class Shape extends RealmObject {
 
     @Ignore
     private Double shapeDistTraveled;
+
+    private RealmList<Trip> trips;
+    private RealmList<Route> routes;
+    private RealmList<Calendar> calendars;
 }
