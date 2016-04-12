@@ -20,21 +20,21 @@ public class StopTime extends RealmObject {
     @Required
     private String stopId;
 
-    @Required
-    private String stopSequence;
+    // required
+    private int stopSequence;
 
     @Ignore
     private String stopHeadsign;
 
     @Ignore
-    private String pickupType;
+    private Byte pickupType;
 
     @Ignore
-    private String dropOffType;
+    private Byte dropOffType;
 
     @Ignore
-    private String shapeDistTraveled;
+    private Double shapeDistTraveled;
 
     @Ignore
-    private String timepoint;
+    private Byte timepoint;
 }

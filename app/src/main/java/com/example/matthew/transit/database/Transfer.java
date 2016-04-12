@@ -13,8 +13,8 @@ public class Transfer extends RealmObject {
     @Required
     private String toStopId;
 
-    @Required
-    private String transferType;
+    // required
+    private byte transferType;
 
-    private String minTransferTime;
+    private Integer minTransferTime;
 }

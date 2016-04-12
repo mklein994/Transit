@@ -11,15 +11,15 @@ public class Shape extends RealmObject {
     @Required
     private String shapeId;
 
-    @Required
-    private String shapePtLat;
+    // required
+    private double shapePtLat;
 
-    @Required
-    private String shapePtLon;
+    // required
+    private double shapePtLon;
 
-    @Required
-    private String shapePtSequence;
+    // required
+    private int shapePtSequence;
 
     @Ignore
-    private String shapeDistTraveled;
+    private Double shapeDistTraveled;
 }

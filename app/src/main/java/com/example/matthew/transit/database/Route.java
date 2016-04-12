@@ -23,8 +23,8 @@ public class Route extends RealmObject {
     @Ignore
     private String routeDesc;
 
-    @Required
-    private String routeType;
+    // required
+    private byte routeType;
 
     private String routeUrl;
 

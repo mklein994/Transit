@@ -1,5 +1,7 @@
 package com.example.matthew.transit.database;
 
+import java.util.Date;
+
 import io.realm.RealmObject;
 import io.realm.annotations.Required;
 
@@ -11,8 +13,8 @@ public class CalendarDate extends RealmObject {
     private String serviceId;
 
     @Required
-    private String date;
+    private Date date;
 
-    @Required
-    private String exceptionType;
+    // required
+    private byte exceptionType;
 }

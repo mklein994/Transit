@@ -19,5 +19,5 @@ public class Frequency extends RealmObject {
     @Required
     private String headwaySecs;
 
-    private String exactTimes;
+    private Byte exactTimes;
 }

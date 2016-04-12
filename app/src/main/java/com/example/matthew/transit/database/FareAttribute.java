@@ -10,17 +10,17 @@ public class FareAttribute extends RealmObject {
     @Required
     private String fareId;
 
-    @Required
-    private String price;
+    // required
+    private double price;
 
     @Required
     private String currencyType;
 
-    @Required
-    private String paymentMethod;
+    // required
+    private byte paymentMethod;
 
-    @Required
-    private String transfers;
+    // required
+    private byte transfers;
 
-    private String transferDuration;
+    private Integer transferDuration;
 }

@@ -20,14 +20,14 @@ public class Trip extends RealmObject {
     @Ignore
     private String tripShortName;
 
-    private String directionId;
+    private Byte directionId;
 
     private String blockId;
 
     private String shapeId;
 
-    private String wheelchairAccessible;
+    private Byte wheelchairAccessible;
 
     @Ignore
-    private String bikesAllowed;
+    private Byte bikesAllowed;
 }

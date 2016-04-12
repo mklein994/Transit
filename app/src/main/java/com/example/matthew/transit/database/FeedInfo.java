@@ -1,5 +1,7 @@
 package com.example.matthew.transit.database;
 
+import java.util.Date;
+
 import io.realm.annotations.Required;
 
 /**
@@ -15,9 +17,9 @@ public class FeedInfo {
     @Required
     private String feedLang;
 
-    private String feedStartDate;
+    private Date feedStartDate;
 
-    private String feedEndDate;
+    private Date feedEndDate;
 
     private String feedVersion;
 }

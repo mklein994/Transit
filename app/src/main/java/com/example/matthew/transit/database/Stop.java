@@ -19,11 +19,11 @@ public class Stop extends RealmObject {
     @Ignore
     private String stopDesc;
 
-    @Required
-    private String stopLat;
+    // required
+    private double stopLat;
 
-    @Required
-    private String stopLon;
+    // required
+    private double stopLon;
 
     @Ignore
     private String zoneId;
@@ -31,7 +31,7 @@ public class Stop extends RealmObject {
     private String stopUrl;
 
     @Ignore
-    private String locationType;
+    private byte locationType;
 
     @Ignore
     private String parentStation;
@@ -40,5 +40,5 @@ public class Stop extends RealmObject {
     private String stopTimezone;
 
     @Ignore
-    private String wheelchairBoarding;
+    private byte wheelchairBoarding;
 }

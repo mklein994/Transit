@@ -1,5 +1,7 @@
 package com.example.matthew.transit.database;
 
+import java.util.Date;
+
 import io.realm.RealmObject;
 import io.realm.annotations.Required;
 
@@ -10,30 +12,30 @@ public class Calendar extends RealmObject {
     @Required
     private String serviceId;
 
-    @Required
-    private String monday;
+    // required
+    private byte monday;
+
+    // required
+    private byte tuesday;
+
+    // required
+    private byte wednesday;
+
+    // required
+    private byte thursday;
+
+    // required
+    private byte friday;
+
+    // required
+    private byte saturday;
+
+    // required
+    private byte sunday;
 
     @Required
-    private String tuesday;
+    private Date startDate;
 
     @Required
-    private String wednesday;
-
-    @Required
-    private String thursday;
-
-    @Required
-    private String friday;
-
-    @Required
-    private String saturday;
-
-    @Required
-    private String sunday;
-
-    @Required
-    private String startDate;
-
-    @Required
-    private String endDate;
+    private Date endDate;
 }
