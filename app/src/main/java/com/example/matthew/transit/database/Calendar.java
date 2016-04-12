@@ -1,5 +1,9 @@
 package com.example.matthew.transit.database;
 
+import org.csveed.annotations.CsvCell;
+import org.csveed.annotations.CsvDate;
+import org.csveed.annotations.CsvIgnore;
+
 import java.util.Date;
 
 import io.realm.RealmList;
@@ -12,6 +16,7 @@ import io.realm.annotations.Required;
  */
 public class Calendar extends RealmObject {
     @PrimaryKey
+    @CsvCell(columnName = "service_id")
     private String serviceId;
 
     // required
@@ -36,14 +41,22 @@ public class Calendar extends RealmObject {
     private byte sunday;
 
     @Required
+    @CsvCell(columnName = "start_date")
+    @CsvDate(format = "yyyyMMdd")
     private Date startDate;
 
     @Required
+    @CsvCell(columnName = "end_date")
+    @CsvDate(format = "yyyyMMdd")
     private Date endDate;
 
+    @CsvIgnore
     private RealmList<Route> routes;
+    @CsvIgnore
     private RealmList<CalendarDate> calendarDates;
+    @CsvIgnore
     private RealmList<Trip> trips;
+    @CsvIgnore
     private Shape shape;
 
     public String getServiceId() {

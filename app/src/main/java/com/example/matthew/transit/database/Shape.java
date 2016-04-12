@@ -1,5 +1,8 @@
 package com.example.matthew.transit.database;
 
+import org.csveed.annotations.CsvCell;
+import org.csveed.annotations.CsvIgnore;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -10,22 +13,30 @@ import io.realm.annotations.PrimaryKey;
  */
 public class Shape extends RealmObject {
     @PrimaryKey
+    @CsvCell(columnName = "shape_id")
     private String shapeId;
 
     // required
+    @CsvCell(columnName = "shape_pt_lat")
     private double shapePtLat;
 
     // required
+    @CsvCell(columnName = "shape_pt_lon")
     private double shapePtLon;
 
     // required
+    @CsvCell(columnName = "shape_pt_sequence")
     private int shapePtSequence;
 
     @Ignore
+    @CsvCell(columnName = "shape_dist_traveled")
     private Double shapeDistTraveled;
 
+    @CsvIgnore
     private RealmList<Trip> trips;
+    @CsvIgnore
     private RealmList<Route> routes;
+    @CsvIgnore
     private RealmList<Calendar> calendars;
 
     public String getShapeId() {

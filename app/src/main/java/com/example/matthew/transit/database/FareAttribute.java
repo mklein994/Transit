@@ -1,5 +1,8 @@
 package com.example.matthew.transit.database;
 
+import org.csveed.annotations.CsvCell;
+import org.csveed.annotations.CsvIgnore;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -10,23 +13,29 @@ import io.realm.annotations.Required;
  */
 public class FareAttribute extends RealmObject {
     @PrimaryKey
+    @CsvCell(columnName = "fare_id")
     private String fareId;
 
     // required
     private double price;
 
     @Required
+    @CsvCell(columnName = "currency_type")
     private String currencyType;
 
     // required
+    @CsvCell(columnName = "payment_method")
     private byte paymentMethod;
 
     // required
     private byte transfers;
 
+    @CsvCell(columnName = "transfer_duration")
     private Integer transferDuration;
 
+    @CsvIgnore
     private RealmList<FareRule> fareRules;
+    @CsvIgnore
     private RealmList<Route> routes;
 
     public String getFareId() {
