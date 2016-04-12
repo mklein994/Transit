@@ -8,6 +8,7 @@ import io.realm.annotations.Required;
  * Created by matthew on 11/04/16.
  */
 public class Agency extends RealmObject {
+    // should be the primary key, except that it can be null.
     @Ignore
     private String agencyId;
 

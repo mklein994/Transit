@@ -1,13 +1,14 @@
 package com.example.matthew.transit.database;
 
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 /**
  * Created by matthew on 11/04/16.
  */
 public class FareAttribute extends RealmObject {
-    @Required
+    @PrimaryKey
     private String fareId;
 
     // required
