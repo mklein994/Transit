@@ -21,4 +21,44 @@ public class CalendarDate extends RealmObject {
 
     private RealmList<Trip> trips;
     private RealmList<Calendar> calendars;
+
+    public String getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(String serviceId) {
+        this.serviceId = serviceId;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
+
+    public byte getExceptionType() {
+        return exceptionType;
+    }
+
+    public void setExceptionType(byte exceptionType) {
+        this.exceptionType = exceptionType;
+    }
+
+    public RealmList<Trip> getTrips() {
+        return trips;
+    }
+
+    public void setTrips(RealmList<Trip> trips) {
+        this.trips = trips;
+    }
+
+    public RealmList<Calendar> getCalendars() {
+        return calendars;
+    }
+
+    public void setCalendars(RealmList<Calendar> calendars) {
+        this.calendars = calendars;
+    }
 }

@@ -17,4 +17,36 @@ public class Transfer extends RealmObject {
     private byte transferType;
 
     private Integer minTransferTime;
+
+    public String getFromStopId() {
+        return fromStopId;
+    }
+
+    public void setFromStopId(String fromStopId) {
+        this.fromStopId = fromStopId;
+    }
+
+    public String getToStopId() {
+        return toStopId;
+    }
+
+    public void setToStopId(String toStopId) {
+        this.toStopId = toStopId;
+    }
+
+    public byte getTransferType() {
+        return transferType;
+    }
+
+    public void setTransferType(byte transferType) {
+        this.transferType = transferType;
+    }
+
+    public Integer getMinTransferTime() {
+        return minTransferTime;
+    }
+
+    public void setMinTransferTime(Integer minTransferTime) {
+        this.minTransferTime = minTransferTime;
+    }
 }

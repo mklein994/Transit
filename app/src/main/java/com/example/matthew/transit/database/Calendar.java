@@ -45,4 +45,116 @@ public class Calendar extends RealmObject {
     private RealmList<CalendarDate> calendarDates;
     private RealmList<Trip> trips;
     private Shape shape;
+
+    public String getServiceId() {
+        return serviceId;
+    }
+
+    public void setServiceId(String serviceId) {
+        this.serviceId = serviceId;
+    }
+
+    public byte getMonday() {
+        return monday;
+    }
+
+    public void setMonday(byte monday) {
+        this.monday = monday;
+    }
+
+    public byte getTuesday() {
+        return tuesday;
+    }
+
+    public void setTuesday(byte tuesday) {
+        this.tuesday = tuesday;
+    }
+
+    public byte getWednesday() {
+        return wednesday;
+    }
+
+    public void setWednesday(byte wednesday) {
+        this.wednesday = wednesday;
+    }
+
+    public byte getThursday() {
+        return thursday;
+    }
+
+    public void setThursday(byte thursday) {
+        this.thursday = thursday;
+    }
+
+    public byte getFriday() {
+        return friday;
+    }
+
+    public void setFriday(byte friday) {
+        this.friday = friday;
+    }
+
+    public byte getSaturday() {
+        return saturday;
+    }
+
+    public void setSaturday(byte saturday) {
+        this.saturday = saturday;
+    }
+
+    public byte getSunday() {
+        return sunday;
+    }
+
+    public void setSunday(byte sunday) {
+        this.sunday = sunday;
+    }
+
+    public Date getStartDate() {
+        return startDate;
+    }
+
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+
+    public Date getEndDate() {
+        return endDate;
+    }
+
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    public RealmList<Route> getRoutes() {
+        return routes;
+    }
+
+    public void setRoutes(RealmList<Route> routes) {
+        this.routes = routes;
+    }
+
+    public RealmList<CalendarDate> getCalendarDates() {
+        return calendarDates;
+    }
+
+    public void setCalendarDates(RealmList<CalendarDate> calendarDates) {
+        this.calendarDates = calendarDates;
+    }
+
+    public RealmList<Trip> getTrips() {
+        return trips;
+    }
+
+    public void setTrips(RealmList<Trip> trips) {
+        this.trips = trips;
+    }
+
+    public Shape getShape() {
+        return shape;
+    }
+
+    public void setShape(Shape shape) {
+        this.shape = shape;
+    }
 }
