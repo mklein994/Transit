@@ -1,4 +1,4 @@
-package com.example.matthew.transit.database;
+package com.example.matthew.transit.model;
 
 import java.util.Date;
 

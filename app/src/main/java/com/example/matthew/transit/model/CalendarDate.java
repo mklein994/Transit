@@ -1,27 +1,43 @@
-package com.example.matthew.transit.database;
+package com.example.matthew.transit.model;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 /**
  * Created by matthew on 11/04/16.
  */
 public class CalendarDate extends RealmObject {
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.CANADA);
+    private static final int SERVICE_ID = 0;
+    private static final int DATE = 1;
+    private static final int EXCEPTION_TYPE = 2;
+
+    // added manually as a foreign key between serviceId and date
+    @PrimaryKey
+    private String calendarPK;
     @Required
     private String serviceId;
-
     @Required
     private Date date;
-
     // required
     private byte exceptionType;
-
     private RealmList<Trip> trips;
-    private RealmList<Calendar> calendars;
 
+    public CalendarDate(String[] fields) {
+        this.serviceId = fields[SERVICE_ID];
+        this.date = ModelUtils.parseDate(fields[DATE]);
+        this.exceptionType = ModelUtils.parseByte(fields[EXCEPTION_TYPE]);
+        setCalendarPK(this.serviceId, this.date);
+    }
+
+    public CalendarDate() {
+    }
     public String getServiceId() {
         return serviceId;
     }
@@ -54,11 +70,11 @@ public class CalendarDate extends RealmObject {
         this.trips = trips;
     }
 
-    public RealmList<Calendar> getCalendars() {
-        return calendars;
+    public String getCalendarPK() {
+        return calendarPK;
     }
 
-    public void setCalendars(RealmList<Calendar> calendars) {
-        this.calendars = calendars;
+    public void setCalendarPK(String serviceId, Date date) {
+        this.calendarPK = serviceId + dateFormat.format(date);
     }
 }

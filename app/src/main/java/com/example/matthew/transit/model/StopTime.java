@@ -1,42 +1,58 @@
-package com.example.matthew.transit.database;
+package com.example.matthew.transit.model;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
+import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
 
 /**
  * Created by matthew on 11/04/16.
  */
 public class StopTime extends RealmObject {
+    private static final int TRIP_ID = 0;
+    private static final int ARRIVAL_TIME = 1;
+    private static final int DEPARTURE_TIME = 2;
+    private static final int STOP_ID = 3;
+    private static final int STOP_SEQUENCE = 4;
+
+    // added as a composite key between tripId and stopSequence
+    @PrimaryKey
+    private String stopTimePK;
     @Required
     private String tripId;
-
     @Required
     private String arrivalTime;
-
     @Required
     private String departureTime;
-
     @Required
     private String stopId;
-
     // required
     private int stopSequence;
-
     @Ignore
     private String stopHeadsign;
-
     @Ignore
     private Byte pickupType;
-
     @Ignore
     private Byte dropOffType;
-
     @Ignore
     private Double shapeDistTraveled;
-
     @Ignore
     private Byte timepoint;
+
+    private Stop stop;
+    private Trip trip;
+
+    public StopTime() {
+    }
+
+    public StopTime(String[] fields) {
+        this.tripId = fields[TRIP_ID];
+        this.arrivalTime = fields[ARRIVAL_TIME];
+        this.departureTime = fields[DEPARTURE_TIME];
+        this.stopId = fields[STOP_ID];
+        this.stopSequence = ModelUtils.parseInt(fields[STOP_SEQUENCE]);
+        setStopTimePK(this.tripId, this.stopSequence);
+    }
 
     public String getTripId() {
         return tripId;
@@ -116,5 +132,29 @@ public class StopTime extends RealmObject {
 
     public void setTimepoint(Byte timepoint) {
         this.timepoint = timepoint;
+    }
+
+    public String getStopTimePK() {
+        return stopTimePK;
+    }
+
+    public void setStopTimePK(String tripId, int stopSequence) {
+        this.stopTimePK = tripId + stopSequence;
+    }
+
+    public Stop getStop() {
+        return stop;
+    }
+
+    public void setStop(Stop stop) {
+        this.stop = stop;
+    }
+
+    public Trip getTrip() {
+        return trip;
+    }
+
+    public void setTrip(Trip trip) {
+        this.trip = trip;
     }
 }

@@ -1,4 +1,4 @@
-package com.example.matthew.transit.database;
+package com.example.matthew.transit.model;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Required;
@@ -7,16 +7,17 @@ import io.realm.annotations.Required;
  * Created by matthew on 11/04/16.
  */
 public class Transfer extends RealmObject {
+
     @Required
     private String fromStopId;
-
     @Required
     private String toStopId;
-
     // required
     private byte transferType;
-
     private Integer minTransferTime;
+
+    public Transfer() {
+    }
 
     public String getFromStopId() {
         return fromStopId;

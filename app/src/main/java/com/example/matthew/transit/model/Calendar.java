@@ -1,4 +1,4 @@
-package com.example.matthew.transit.database;
+package com.example.matthew.transit.model;
 
 import java.util.Date;
 
@@ -11,40 +11,56 @@ import io.realm.annotations.Required;
  * Created by matthew on 11/04/16.
  */
 public class Calendar extends RealmObject {
+
+    private static final int SERVICE_ID = 0;
+    private static final int MONDAY = 1;
+    private static final int TUESDAY = 2;
+    private static final int WEDNESDAY = 3;
+    private static final int THURSDAY = 4;
+    private static final int FRIDAY = 5;
+    private static final int SATURDAY = 6;
+    private static final int SUNDAY = 7;
+    private static final int START_DATE = 8;
+    private static final int END_DATE = 9;
     @PrimaryKey
     private String serviceId;
-
     // required
     private byte monday;
-
     // required
     private byte tuesday;
-
     // required
     private byte wednesday;
-
     // required
     private byte thursday;
-
     // required
     private byte friday;
-
     // required
     private byte saturday;
-
     // required
     private byte sunday;
-
     @Required
     private Date startDate;
-
     @Required
     private Date endDate;
-
     private RealmList<Route> routes;
     private RealmList<CalendarDate> calendarDates;
     private RealmList<Trip> trips;
-    private Shape shape;
+
+    public Calendar() {
+    }
+
+    public Calendar(String[] fields) {
+        this.serviceId = fields[SERVICE_ID];
+        this.monday = ModelUtils.parseByte(fields[MONDAY]);
+        this.tuesday = ModelUtils.parseByte(fields[TUESDAY]);
+        this.wednesday = ModelUtils.parseByte(fields[WEDNESDAY]);
+        this.thursday = ModelUtils.parseByte(fields[THURSDAY]);
+        this.friday = ModelUtils.parseByte(fields[FRIDAY]);
+        this.saturday = ModelUtils.parseByte(fields[SATURDAY]);
+        this.sunday = ModelUtils.parseByte(fields[SUNDAY]);
+        this.startDate = ModelUtils.parseDate(fields[START_DATE]);
+        this.endDate = ModelUtils.parseDate(fields[END_DATE]);
+    }
 
     public String getServiceId() {
         return serviceId;
@@ -126,12 +142,12 @@ public class Calendar extends RealmObject {
         this.endDate = endDate;
     }
 
-    public RealmList<Route> getRoutes() {
-        return routes;
+    public RealmList<Trip> getTrips() {
+        return trips;
     }
 
-    public void setRoutes(RealmList<Route> routes) {
-        this.routes = routes;
+    public void setTrips(RealmList<Trip> trips) {
+        this.trips = trips;
     }
 
     public RealmList<CalendarDate> getCalendarDates() {
@@ -142,19 +158,11 @@ public class Calendar extends RealmObject {
         this.calendarDates = calendarDates;
     }
 
-    public RealmList<Trip> getTrips() {
-        return trips;
+    public RealmList<Route> getRoutes() {
+        return routes;
     }
 
-    public void setTrips(RealmList<Trip> trips) {
-        this.trips = trips;
-    }
-
-    public Shape getShape() {
-        return shape;
-    }
-
-    public void setShape(Shape shape) {
-        this.shape = shape;
+    public void setRoutes(RealmList<Route> routes) {
+        this.routes = routes;
     }
 }
