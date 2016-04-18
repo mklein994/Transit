@@ -2,10 +2,8 @@ package com.example.matthew.transit.model;
 
 import org.csveed.annotations.CsvCell;
 import org.csveed.annotations.CsvFile;
-import org.csveed.annotations.CsvIgnore;
 import org.csveed.bean.ColumnNameMapper;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.Required;
@@ -48,9 +46,6 @@ public class Agency extends RealmObject {
     @Ignore
     @CsvCell(columnName = "agency_email")
     private String agencyEmail;
-    //@Ignore
-	//@CsvIgnore
-    //private RealmList<Route> routes;
 
     public Agency() {
     }
@@ -125,13 +120,5 @@ public class Agency extends RealmObject {
 
     public void setAgencyEmail(String agencyEmail) {
         this.agencyEmail = agencyEmail;
-    }
-
-    public RealmList<Route> getRoutes() {
-        return routes;
-    }
-
-    public void setRoutes(RealmList<Route> routes) {
-        this.routes = routes;
     }
 }

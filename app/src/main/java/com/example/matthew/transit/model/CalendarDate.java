@@ -1,14 +1,13 @@
 package com.example.matthew.transit.model;
 
-import java.text.SimpleDateFormat;
 import org.csveed.annotations.CsvCell;
 import org.csveed.annotations.CsvDate;
 import org.csveed.annotations.CsvIgnore;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -23,6 +22,7 @@ public class CalendarDate extends RealmObject {
     private static final int EXCEPTION_TYPE = 2;
 
     // added manually as a foreign key between serviceId and date
+    @CsvIgnore
     @PrimaryKey
     private String calendarPK;
     @Required
@@ -35,10 +35,6 @@ public class CalendarDate extends RealmObject {
     // required
     @CsvCell(columnName = "exception_type")
     private byte exceptionType;
-	@CsvIgnore
-	private RealmList<Trip> trips;
-	@CsvIgnore
-	private RealmList<Calendar> calendars;
 
     public CalendarDate(String[] fields) {
         this.serviceId = fields[SERVICE_ID];
@@ -74,14 +70,6 @@ public class CalendarDate extends RealmObject {
         this.exceptionType = exceptionType;
     }
 
-    public RealmList<Trip> getTrips() {
-        return trips;
-    }
-
-    public void setTrips(RealmList<Trip> trips) {
-        this.trips = trips;
-    }
-
     public String getCalendarPK() {
         return calendarPK;
     }
@@ -89,4 +77,5 @@ public class CalendarDate extends RealmObject {
     public void setCalendarPK(String serviceId, Date date) {
         this.calendarPK = serviceId + dateFormat.format(date);
     }
+
 }

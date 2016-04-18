@@ -3,7 +3,6 @@ package com.example.matthew.transit.model;
 import org.csveed.annotations.CsvCell;
 import org.csveed.annotations.CsvIgnore;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -17,29 +16,25 @@ public class FareRule extends RealmObject {
     private static final int ROUTE_ID = 1;
     // added to create a composite key from fareId and routeId
     @PrimaryKey
+    @CsvIgnore
     private String fareRoutePK;
-
     @Required
     @CsvCell(columnName = "fare_id")
     private String fareId;
     @CsvCell(columnName = "route_id")
     private String routeId;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "origin_id")
     private String originId;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "destination_id")
     private String destinationId;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "contains_id")
     private String containsId;
-
-    @CsvIgnore
-    private RealmList<FareAttribute> fareAttributes;
-    @CsvIgnore
-    private RealmList<Route> routes;
-    @CsvIgnore
-    private RealmList<Trip> trips;
 
     public FareRule() {
     }
@@ -92,30 +87,6 @@ public class FareRule extends RealmObject {
 
     public String getFareRoutePK() {
         return fareRoutePK;
-    }
-
-    public RealmList<FareAttribute> getFareAttributes() {
-        return fareAttributes;
-    }
-
-    public setFareAttributes(RealmList<FareAttribute> fareAttributes) {
-        this.fareAttributes = fareAttributes;
-    }
-
-    public RealmList<Route> getRoutes() {
-        return routes;
-    }
-
-    public void setRoutes(RealmList<Route> routes) {
-        this.routes = routes;
-    }
-
-    public RealmList<Trip> getTrips() {
-        return trips;
-    }
-    
-    public void setTrips(RealmList<Trip> trips) {
-        this.trips = trips;
     }
 
     public void setFareRoutePK(String routeId, String fareId) {

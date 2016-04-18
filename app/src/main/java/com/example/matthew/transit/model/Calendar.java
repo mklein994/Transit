@@ -2,11 +2,9 @@ package com.example.matthew.transit.model;
 
 import org.csveed.annotations.CsvCell;
 import org.csveed.annotations.CsvDate;
-import org.csveed.annotations.CsvIgnore;
 
 import java.util.Date;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -52,13 +50,6 @@ public class Calendar extends RealmObject {
     @CsvDate(format = "yyyyMMdd")
     private Date endDate;
 
-    @CsvIgnore
-    private RealmList<Route> routes;
-    @CsvIgnore
-    private RealmList<CalendarDate> calendarDates;
-    @CsvIgnore
-    private RealmList<Trip> trips;
-
     public Calendar() {
     }
 
@@ -74,9 +65,6 @@ public class Calendar extends RealmObject {
         this.startDate = ModelUtils.parseDate(fields[START_DATE]);
         this.endDate = ModelUtils.parseDate(fields[END_DATE]);
     }
-
-    @CsvIgnore
-    private Shape shape;
 
     public String getServiceId() {
         return serviceId;
@@ -158,27 +146,4 @@ public class Calendar extends RealmObject {
         this.endDate = endDate;
     }
 
-    public RealmList<Trip> getTrips() {
-        return trips;
-    }
-
-    public void setTrips(RealmList<Trip> trips) {
-        this.trips = trips;
-    }
-
-    public RealmList<CalendarDate> getCalendarDates() {
-        return calendarDates;
-    }
-
-    public void setCalendarDates(RealmList<CalendarDate> calendarDates) {
-        this.calendarDates = calendarDates;
-    }
-
-    public RealmList<Route> getRoutes() {
-        return routes;
-    }
-
-    public void setRoutes(RealmList<Route> routes) {
-        this.routes = routes;
-    }
 }

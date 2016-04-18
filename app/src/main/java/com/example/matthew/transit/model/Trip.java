@@ -3,7 +3,6 @@ package com.example.matthew.transit.model;
 import org.csveed.annotations.CsvCell;
 import org.csveed.annotations.CsvIgnore;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -34,6 +33,7 @@ public class Trip extends RealmObject {
     @CsvCell(columnName = "trip_headsign")
     private String tripHeadsign;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "trip_short_name")
     private String tripShortName;
     @CsvCell(columnName = "direction_id")
@@ -45,18 +45,9 @@ public class Trip extends RealmObject {
     @CsvCell(columnName = "wheelchair_accessible")
     private Byte wheelchairAccessible;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "bikes_allowed")
     private Byte bikesAllowed;
-    @CsvIgnore
-    private RealmList<Stop> stops;
-    @CsvIgnore
-    private RealmList<StopTime> stopTimes;
-    private Shape shape;
-    @CsvIgnore
-    private Calendar calendar;
-    private CalendarDate calendarDate;
-    @CsvIgnore
-    private Route route;
 
     public Trip() {
     }
@@ -150,53 +141,5 @@ public class Trip extends RealmObject {
 
     public void setBikesAllowed(Byte bikesAllowed) {
         this.bikesAllowed = bikesAllowed;
-    }
-
-    public RealmList<Stop> getStops() {
-        return stops;
-    }
-
-    public setStops(RealmList<Stop> stops) {
-        this.stops = stops;
-    }
-
-    public RealmList<StopTime> getStopTimes() {
-        return stopTimes;
-    }
-
-    public void setStopTimes(RealmList<StopTime> stopTimes) {
-        this.stopTimes = stopTimes;
-    }
-
-    public Shape getShape() {
-        return shape;
-    }
-
-    public void setShape(Shape shape) {
-        this.shape = shape;
-    }
-
-    public Calendar getCalendar() {
-        return calendar;
-    }
-
-    public void setCalendar(Calendar calendar) {
-        this.calendar = calendar;
-    }
-
-    public CalendarDate getCalendarDate() {
-        return calendarDate;
-    }
-
-    public void setCalendarDate(CalendarDate calendarDate) {
-        this.calendarDate = calendarDate;
-    }
-
-    public Route getRoute() {
-        return route;
-    }
-
-    public void setRoute(Route route) {
-        this.route = route;
     }
 }

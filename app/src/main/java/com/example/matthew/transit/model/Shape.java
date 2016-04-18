@@ -1,11 +1,8 @@
 package com.example.matthew.transit.model;
 
-import java.util.Locale;
-
 import org.csveed.annotations.CsvCell;
 import org.csveed.annotations.CsvIgnore;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -36,10 +33,9 @@ public class Shape extends RealmObject {
     @CsvCell(columnName = "shape_pt_sequence")
     private int shapePtSequence;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "shape_dist_traveled")
     private Double shapeDistTraveled;
-    @CsvIgnore
-    private RealmList<Trip> trips;
 
     public Shape(String[] fields) {
         this.shapeId = fields[SHAPE_ID];
@@ -59,19 +55,6 @@ public class Shape extends RealmObject {
     public void setShapePK(String shapeId, int shapePtSequence) {
         this.shapePK = shapeId + shapePtSequence;
     }
-
-    public String getShapeIdPtSequence() {
-        return String.format(Locale.CANADA, "%s%s", shapeId, shapeIdPtSequence);
-    }
-
-    public void setShapeIdPtSequence(String shapeId, int shapeIdPtSequence) {
-        this.shapeIdPtSequence = String.format(Locale.CANADA, "%s%d", shapeId, shapeIdPtSequence);
-    }
-
-    @CsvIgnore
-    private RealmList<Route> routes;
-    @CsvIgnore
-    private RealmList<Calendar> calendars;
 
     public String getShapeId() {
         return shapeId;
@@ -113,27 +96,4 @@ public class Shape extends RealmObject {
         this.shapeDistTraveled = shapeDistTraveled;
     }
 
-    public RealmList<Trip> getTrips() {
-        return trips;
-    }
-
-    public void setTrips(RealmList<Trip> trips) {
-        this.trips = trips;
-    }
-
-    public RealmList<Route> getRoutes() {
-        return routes;
-    }
-
-    public void setRoutes(RealmList<Route> routes) {
-        this.routes = routes;
-    }
-
-    public RealmList<Calendar> getCalendars() {
-        return calendars;
-    }
-
-    public void setCalendars(RealmList<Calendar> calendars) {
-        this.calendars = calendars;
-    }
 }

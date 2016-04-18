@@ -9,7 +9,6 @@ import io.realm.annotations.Required;
  * Created by matthew on 11/04/16.
  */
 public class Transfer extends RealmObject {
-
     @Required
     @CsvCell(columnName = "from_stop_id")
     private String fromStopId;

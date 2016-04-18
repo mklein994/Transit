@@ -3,7 +3,6 @@ package com.example.matthew.transit.model;
 import org.csveed.annotations.CsvCell;
 import org.csveed.annotations.CsvIgnore;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -28,6 +27,7 @@ public class Stop extends RealmObject {
     @CsvCell(columnName = "stop_name")
     private String stopName;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "stop_desc")
     private String stopDesc;
     // required
@@ -37,26 +37,27 @@ public class Stop extends RealmObject {
     @CsvCell(columnName = "stop_lon")
     private double stopLon;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "zone_id")
     private String zoneId;
     @CsvCell(columnName = "stop_url")
     private String stopUrl;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "location_type")
     private byte locationType;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "parent_station")
     private String parentStation;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "stop_timezone")
     private String stopTimezone;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "wheelchair_boarding")
     private byte wheelchairBoarding;
-    @CsvIgnore
-    private RealmList<Trip> trips;
-    @CsvIgnore
-    private RealmList<StopTime> stopTimes;
 
     public Stop() {
     }
@@ -166,19 +167,4 @@ public class Stop extends RealmObject {
         this.wheelchairBoarding = wheelchairBoarding;
     }
 
-    public RealmList<Trip> getTrips() {
-        return trips;
-    }
-
-    public void setTrips(RealmList<Trip> trips) {
-        this.trips = trips;
-    }
-
-    public RealmList<StopTime> getStopTimes() {
-        return stopTimes;
-    }
-
-    public void setStopTimes(RealmList<StopTime> stopTimes) {
-        this.stopTimes = stopTimes;
-    }
 }

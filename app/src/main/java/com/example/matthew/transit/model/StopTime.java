@@ -2,6 +2,7 @@ package com.example.matthew.transit.model;
 
 import org.csveed.annotations.CsvCell;
 import org.csveed.annotations.CsvDate;
+import org.csveed.annotations.CsvIgnore;
 
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -20,6 +21,7 @@ public class StopTime extends RealmObject {
 
     // added as a composite key between tripId and stopSequence
     @PrimaryKey
+    @CsvIgnore
     private String stopTimePK;
     @Required
     @CsvCell(columnName = "trip_id")
@@ -39,22 +41,24 @@ public class StopTime extends RealmObject {
     @CsvCell(columnName = "stop_sequence")
     private int stopSequence;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "stop_headsign")
     private String stopHeadsign;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "pickup_type")
     private Byte pickupType;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "drop_off_type")
     private Byte dropOffType;
     @Ignore
+    @CsvIgnore
     @CsvCell(columnName = "shape_dist_traveled")
     private Double shapeDistTraveled;
     @Ignore
+    @CsvIgnore
     private Byte timepoint;
-
-    private Stop stop;
-    private Trip trip;
 
     public StopTime() {
     }
@@ -156,19 +160,4 @@ public class StopTime extends RealmObject {
         this.stopTimePK = tripId + stopSequence;
     }
 
-    public Stop getStop() {
-        return stop;
-    }
-
-    public void setStop(Stop stop) {
-        this.stop = stop;
-    }
-
-    public Trip getTrip() {
-        return trip;
-    }
-
-    public void setTrip(Trip trip) {
-        this.trip = trip;
-    }
 }
