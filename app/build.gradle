@@ -25,5 +25,5 @@ dependencies {
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.3.0'
     compile 'com.opencsv:opencsv:3.7'
-    compile 'net.sf.supercsv:super-csv:2.4.0'
+    compile 'org.csveed:csveed:0.4.2'
 }

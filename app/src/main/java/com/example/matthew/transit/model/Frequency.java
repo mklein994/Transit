@@ -1,5 +1,8 @@
 package com.example.matthew.transit.model;
 
+import org.csveed.annotations.CsvCell;
+import org.csveed.annotations.CsvDate;
+
 import io.realm.RealmObject;
 import io.realm.annotations.Required;
 
@@ -8,17 +11,24 @@ import io.realm.annotations.Required;
  */ //region Frequency model (not used)
 public class Frequency extends RealmObject {
     @Required
+    @CsvCell(columnName = "trip_id")
     private String tripId;
 
     @Required
+    @CsvCell(columnName = "start_time")
+	@CsvDate(format = "HH:mm:ss")
     private String startTime;
 
     @Required
+    @CsvCell(columnName = "end_time")
+	@CsvDate(format = "HH:mm:ss")
     private String endTime;
 
     @Required
+    @CsvCell(columnName = "headway_secs")
     private String headwaySecs;
 
+    @CsvCell(columnName = "exact_times")
     private Byte exactTimes;
 
     public String getTripId() {

@@ -1,5 +1,8 @@
 package com.example.matthew.transit.model;
 
+import org.csveed.annotations.CsvCell;
+import org.csveed.annotations.CsvIgnore;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -16,17 +19,27 @@ public class FareAttribute extends RealmObject {
     private static final int TRANSFERS = 4;
     private static final int TRANSFER_DURATION = 5;
     @PrimaryKey
+    @CsvCell(columnName = "fare_id")
     private String fareId;
     // required
     private double price;
     @Required
+    @CsvCell(columnName = "currency_type")
     private String currencyType;
     // required
+    @CsvCell(columnName = "payment_method")
     private byte paymentMethod;
     // GTFS requires it, but an empty string is allowed.
     private Byte transfers;
+
+    @CsvCell(columnName = "transfer_duration")
     private Integer transferDuration;
+
+    @CsvIgnore
     private RealmList<FareRule> fareRules;
+
+    @CsvIgnore
+    private RealmList<Route> routes;
 
     public FareAttribute() {
     }
@@ -94,5 +107,13 @@ public class FareAttribute extends RealmObject {
 
     public void setFareRules(RealmList<FareRule> fareRules) {
         this.fareRules = fareRules;
+    }
+
+    public RealmList<Route> getRoutes() {
+        return routes;
+    }
+
+    public void setRoutes(RealmList<Route> routes) {
+        this.routes = routes;
     }
 }

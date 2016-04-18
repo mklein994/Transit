@@ -2,6 +2,9 @@ package com.example.matthew.transit.model;
 
 import java.util.Locale;
 
+import org.csveed.annotations.CsvCell;
+import org.csveed.annotations.CsvIgnore;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -18,19 +21,24 @@ public class Shape extends RealmObject {
     private static final int SHAPE_PT_SEQUENCE = 3;
     // added manually to create a composite key between shapeId and ptSequence.
     @PrimaryKey
-    private String shapeIdPtSequence;
-    @Required
+    @CsvIgnore
     private String shapePK;
     @Required
+    @CsvCell(columnName = "shape_id")
     private String shapeId;
     // required
+    @CsvCell(columnName = "shape_pt_lat")
     private double shapePtLat;
     // required
+    @CsvCell(columnName = "shape_pt_lon")
     private double shapePtLon;
     // required
+    @CsvCell(columnName = "shape_pt_sequence")
     private int shapePtSequence;
     @Ignore
+    @CsvCell(columnName = "shape_dist_traveled")
     private Double shapeDistTraveled;
+    @CsvIgnore
     private RealmList<Trip> trips;
 
     public Shape(String[] fields) {
@@ -59,6 +67,11 @@ public class Shape extends RealmObject {
     public void setShapeIdPtSequence(String shapeId, int shapeIdPtSequence) {
         this.shapeIdPtSequence = String.format(Locale.CANADA, "%s%d", shapeId, shapeIdPtSequence);
     }
+
+    @CsvIgnore
+    private RealmList<Route> routes;
+    @CsvIgnore
+    private RealmList<Calendar> calendars;
 
     public String getShapeId() {
         return shapeId;
@@ -106,5 +119,21 @@ public class Shape extends RealmObject {
 
     public void setTrips(RealmList<Trip> trips) {
         this.trips = trips;
+    }
+
+    public RealmList<Route> getRoutes() {
+        return routes;
+    }
+
+    public void setRoutes(RealmList<Route> routes) {
+        this.routes = routes;
+    }
+
+    public RealmList<Calendar> getCalendars() {
+        return calendars;
+    }
+
+    public void setCalendars(RealmList<Calendar> calendars) {
+        this.calendars = calendars;
     }
 }

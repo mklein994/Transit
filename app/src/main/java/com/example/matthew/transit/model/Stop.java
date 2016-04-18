@@ -1,5 +1,8 @@
 package com.example.matthew.transit.model;
 
+import org.csveed.annotations.CsvCell;
+import org.csveed.annotations.CsvIgnore;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -17,28 +20,42 @@ public class Stop extends RealmObject {
     private static final int STOP_LON = 4;
     private static final int STOP_URL = 5;
     @PrimaryKey
+    @CsvCell(columnName = "stop_id")
     private String stopId;
+    @CsvCell(columnName = "stop_code")
     private String stopCode;
     @Required
+    @CsvCell(columnName = "stop_name")
     private String stopName;
     @Ignore
+    @CsvCell(columnName = "stop_desc")
     private String stopDesc;
     // required
+    @CsvCell(columnName = "stop_lat")
     private double stopLat;
     // required
+    @CsvCell(columnName = "stop_lon")
     private double stopLon;
     @Ignore
+    @CsvCell(columnName = "zone_id")
     private String zoneId;
+    @CsvCell(columnName = "stop_url")
     private String stopUrl;
     @Ignore
+    @CsvCell(columnName = "location_type")
     private byte locationType;
     @Ignore
+    @CsvCell(columnName = "parent_station")
     private String parentStation;
     @Ignore
+    @CsvCell(columnName = "stop_timezone")
     private String stopTimezone;
     @Ignore
+    @CsvCell(columnName = "wheelchair_boarding")
     private byte wheelchairBoarding;
+    @CsvIgnore
     private RealmList<Trip> trips;
+    @CsvIgnore
     private RealmList<StopTime> stopTimes;
 
     public Stop() {
@@ -147,6 +164,14 @@ public class Stop extends RealmObject {
 
     public void setWheelchairBoarding(byte wheelchairBoarding) {
         this.wheelchairBoarding = wheelchairBoarding;
+    }
+
+    public RealmList<Trip> getTrips() {
+        return trips;
+    }
+
+    public void setTrips(RealmList<Trip> trips) {
+        this.trips = trips;
     }
 
     public RealmList<StopTime> getStopTimes() {

@@ -1,5 +1,8 @@
 package com.example.matthew.transit.model;
 
+import org.csveed.annotations.CsvCell;
+import org.csveed.annotations.CsvIgnore;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -20,26 +23,39 @@ public class Trip extends RealmObject {
     private static final int SHAPE_ID = 6;
     private static final int WHEELCHAIR_ACCESSIBLE = 7;
     @Required
+    @CsvCell(columnName = "route_id")
     private String routeId;
     @Required
+    @CsvCell(columnName = "service_id")
     private String serviceId;
     @PrimaryKey
+    @CsvCell(columnName = "trip_id")
     private String tripId;
+    @CsvCell(columnName = "trip_headsign")
     private String tripHeadsign;
     @Ignore
+    @CsvCell(columnName = "trip_short_name")
     private String tripShortName;
+    @CsvCell(columnName = "direction_id")
     private Byte directionId;
+    @CsvCell(columnName = "block_id")
     private String blockId;
+    @CsvCell(columnName = "shape_id")
     private String shapeId;
+    @CsvCell(columnName = "wheelchair_accessible")
     private Byte wheelchairAccessible;
     @Ignore
+    @CsvCell(columnName = "bikes_allowed")
     private Byte bikesAllowed;
+    @CsvIgnore
     private RealmList<Stop> stops;
-
+    @CsvIgnore
     private RealmList<StopTime> stopTimes;
     private Shape shape;
+    @CsvIgnore
     private Calendar calendar;
     private CalendarDate calendarDate;
+    @CsvIgnore
     private Route route;
 
     public Trip() {
@@ -134,6 +150,14 @@ public class Trip extends RealmObject {
 
     public void setBikesAllowed(Byte bikesAllowed) {
         this.bikesAllowed = bikesAllowed;
+    }
+
+    public RealmList<Stop> getStops() {
+        return stops;
+    }
+
+    public setStops(RealmList<Stop> stops) {
+        this.stops = stops;
     }
 
     public RealmList<StopTime> getStopTimes() {

@@ -1,5 +1,8 @@
 package com.example.matthew.transit.model;
 
+import org.csveed.annotations.CsvCell;
+import org.csveed.annotations.CsvIgnore;
+
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -17,22 +20,37 @@ public class Route extends RealmObject {
     private static final int ROUTE_COLOR = 4;
     private static final int ROUTE_TEXT_COLOR = 5;
     @PrimaryKey
+    @CsvCell(columnName = "route_id")
     private String routeId;
     @Ignore
+    @CsvCell(columnName = "agency_id")
     private String agencyId;
     @Required
+    @CsvCell(columnName = "route_short_name")
     private String routeShortName;
     @Required
+    @CsvCell(columnName = "route_long_name")
     private String routeLongName;
     @Ignore
+    @CsvCell(columnName = "route_desc")
     private String routeDesc;
     // required
+    @CsvCell(columnName = "route_type")
     private byte routeType;
+
+    @CsvCell(columnName = "route_url")
     private String routeUrl;
+
+    @CsvCell(columnName = "route_color")
     private String routeColor;
+
+    @CsvCell(columnName = "route_text_color")
     private String routeTextColor;
+
+    @CsvIgnore
     private RealmList<Trip> trips;
     @Ignore
+    @CsvIgnore
     private Agency agency;
     private RealmList<FareRule> fareRules;
     private RealmList<FareAttribute> fareAttributes;
@@ -133,6 +151,10 @@ public class Route extends RealmObject {
         this.trips = trips;
     }
 
+	public Agency getAgency() {
+        return agency;
+	}
+
     public RealmList<FareRule> getFareRules() {
         return fareRules;
     }
@@ -179,5 +201,9 @@ public class Route extends RealmObject {
 
     public void setStops(RealmList<Stop> stops) {
         this.stops = stops;
+    }
+
+    public setAgency(Agency agency) {
+        this.agency = agency;
     }
 }
