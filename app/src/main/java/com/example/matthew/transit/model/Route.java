@@ -37,7 +37,7 @@ public class Route extends RealmObject {
     private String routeDesc;
     // required
     @CsvCell(columnName = "route_type")
-    private byte routeType;
+    private int routeType;
 
     @CsvCell(columnName = "route_url")
     private String routeUrl;
@@ -55,7 +55,7 @@ public class Route extends RealmObject {
         this.routeId = fields[ROUTE_ID];
         this.routeShortName = fields[ROUTE_SHORT_NAME];
         this.routeLongName = fields[ROUTE_LONG_NAME];
-        this.routeType = ModelUtils.parseByte((fields[ROUTE_TYPE]));
+        this.routeType = ModelUtils.parseInt((fields[ROUTE_TYPE]));
         this.routeColor = fields[ROUTE_COLOR];
         this.routeTextColor = fields[ROUTE_TEXT_COLOR];
     }
@@ -100,7 +100,7 @@ public class Route extends RealmObject {
         this.routeDesc = routeDesc;
     }
 
-    public byte getRouteType() {
+    public long getRouteType() {
         return routeType;
     }
 

@@ -37,13 +37,13 @@ public class Trip extends RealmObject {
     @CsvCell(columnName = "trip_short_name")
     private String tripShortName;
     @CsvCell(columnName = "direction_id")
-    private Byte directionId;
+    private Boolean directionId;
     @CsvCell(columnName = "block_id")
     private String blockId;
     @CsvCell(columnName = "shape_id")
     private String shapeId;
     @CsvCell(columnName = "wheelchair_accessible")
-    private Byte wheelchairAccessible;
+    private Boolean wheelchairAccessible;
     @Ignore
     @CsvIgnore
     @CsvCell(columnName = "bikes_allowed")
@@ -57,10 +57,10 @@ public class Trip extends RealmObject {
         this.serviceId = fields[SERVICE_ID];
         this.tripId = fields[TRIP_ID];
         this.tripHeadsign = fields[TRIP_HEADSIGN];
-        this.directionId = Byte.valueOf(fields[DIRECTION_ID]);
+        this.directionId = ModelUtils.parseBoolean(fields[DIRECTION_ID]);
         this.blockId = fields[BLOCK_ID];
         this.shapeId = fields[SHAPE_ID];
-        this.wheelchairAccessible = Byte.valueOf(fields[WHEELCHAIR_ACCESSIBLE]);
+        this.wheelchairAccessible = ModelUtils.parseBoolean(fields[WHEELCHAIR_ACCESSIBLE]);
     }
 
     public String getRouteId() {
@@ -103,11 +103,11 @@ public class Trip extends RealmObject {
         this.tripShortName = tripShortName;
     }
 
-    public Byte getDirectionId() {
+    public Boolean getDirectionId() {
         return directionId;
     }
 
-    public void setDirectionId(Byte directionId) {
+    public void setDirectionId(Boolean directionId) {
         this.directionId = directionId;
     }
 
@@ -127,11 +127,11 @@ public class Trip extends RealmObject {
         this.shapeId = shapeId;
     }
 
-    public Byte getWheelchairAccessible() {
+    public Boolean getWheelchairAccessible() {
         return wheelchairAccessible;
     }
 
-    public void setWheelchairAccessible(Byte wheelchairAccessible) {
+    public void setWheelchairAccessible(Boolean wheelchairAccessible) {
         this.wheelchairAccessible = wheelchairAccessible;
     }
 

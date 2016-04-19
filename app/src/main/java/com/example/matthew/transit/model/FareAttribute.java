@@ -26,9 +26,9 @@ public class FareAttribute extends RealmObject {
     private String currencyType;
     // required
     @CsvCell(columnName = "payment_method")
-    private byte paymentMethod;
+    private boolean paymentMethod;
     // GTFS requires it, but an empty string is allowed.
-    private Byte transfers;
+    private Integer transfers;
 
     @CsvCell(columnName = "transfer_duration")
     private Integer transferDuration;
@@ -40,8 +40,8 @@ public class FareAttribute extends RealmObject {
         this.fareId = fields[FARE_ID];
         this.price = Double.parseDouble(fields[PRICE]);
         this.currencyType = fields[CURRENCY_TYPE];
-        this.paymentMethod = ModelUtils.parseByte(fields[PAYMENT_METHOD]);
-        this.transfers = ModelUtils.parseByte(fields[TRANSFERS]);
+        this.paymentMethod = ModelUtils.parseBoolean(fields[PAYMENT_METHOD]);
+        this.transfers = ModelUtils.parseInt(fields[TRANSFERS]);
         this.transferDuration = ModelUtils.parseInt(fields[TRANSFER_DURATION]);
     }
 
@@ -69,19 +69,19 @@ public class FareAttribute extends RealmObject {
         this.currencyType = currencyType;
     }
 
-    public byte getPaymentMethod() {
+    public boolean getPaymentMethod() {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(byte paymentMethod) {
+    public void setPaymentMethod(boolean paymentMethod) {
         this.paymentMethod = paymentMethod;
     }
 
-    public Byte getTransfers() {
+    public Integer getTransfers() {
         return transfers;
     }
 
-    public void setTransfers(Byte transfers) {
+    public void setTransfers(Integer transfers) {
         this.transfers = transfers;
     }
 

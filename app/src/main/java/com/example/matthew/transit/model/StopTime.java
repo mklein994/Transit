@@ -4,6 +4,8 @@ import org.csveed.annotations.CsvCell;
 import org.csveed.annotations.CsvDate;
 import org.csveed.annotations.CsvIgnore;
 
+import java.util.Date;
+
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -29,11 +31,11 @@ public class StopTime extends RealmObject {
     @Required
     @CsvCell(columnName = "arrival_time")
     @CsvDate(format = "HH:mm:ss")
-    private String arrivalTime;
+    private Date arrivalTime;
     @Required
     @CsvCell(columnName = "departure_time")
     @CsvDate(format = "HH:mm:ss")
-    private String departureTime;
+    private Date departureTime;
     @Required
     @CsvCell(columnName = "stop_id")
     private String stopId;
@@ -65,8 +67,8 @@ public class StopTime extends RealmObject {
 
     public StopTime(String[] fields) {
         this.tripId = fields[TRIP_ID];
-        this.arrivalTime = fields[ARRIVAL_TIME];
-        this.departureTime = fields[DEPARTURE_TIME];
+        this.arrivalTime = ModelUtils.parseTime(fields[ARRIVAL_TIME]);
+        this.departureTime = ModelUtils.parseTime(fields[DEPARTURE_TIME]);
         this.stopId = fields[STOP_ID];
         this.stopSequence = ModelUtils.parseInt(fields[STOP_SEQUENCE]);
         setStopTimePK(this.tripId, this.stopSequence);
@@ -80,19 +82,19 @@ public class StopTime extends RealmObject {
         this.tripId = tripId;
     }
 
-    public String getArrivalTime() {
+    public Date getArrivalTime() {
         return arrivalTime;
     }
 
-    public void setArrivalTime(String arrivalTime) {
+    public void setArrivalTime(Date arrivalTime) {
         this.arrivalTime = arrivalTime;
     }
 
-    public String getDepartureTime() {
+    public Date getDepartureTime() {
         return departureTime;
     }
 
-    public void setDepartureTime(String departureTime) {
+    public void setDepartureTime(Date departureTime) {
         this.departureTime = departureTime;
     }
 

@@ -28,19 +28,19 @@ public class Calendar extends RealmObject {
     @CsvCell(columnName = "service_id")
     private String serviceId;
     // required
-    private byte monday;
+    private boolean monday;
     // required
-    private byte tuesday;
+    private boolean tuesday;
     // required
-    private byte wednesday;
+    private boolean wednesday;
     // required
-    private byte thursday;
+    private boolean thursday;
     // required
-    private byte friday;
+    private boolean friday;
     // required
-    private byte saturday;
+    private boolean saturday;
     // required
-    private byte sunday;
+    private boolean sunday;
     @Required
     @CsvCell(columnName = "start_date")
     @CsvDate(format = "yyyyMMdd")
@@ -55,13 +55,13 @@ public class Calendar extends RealmObject {
 
     public Calendar(String[] fields) {
         this.serviceId = fields[SERVICE_ID];
-        this.monday = ModelUtils.parseByte(fields[MONDAY]);
-        this.tuesday = ModelUtils.parseByte(fields[TUESDAY]);
-        this.wednesday = ModelUtils.parseByte(fields[WEDNESDAY]);
-        this.thursday = ModelUtils.parseByte(fields[THURSDAY]);
-        this.friday = ModelUtils.parseByte(fields[FRIDAY]);
-        this.saturday = ModelUtils.parseByte(fields[SATURDAY]);
-        this.sunday = ModelUtils.parseByte(fields[SUNDAY]);
+        this.monday = ModelUtils.parseBoolean(fields[MONDAY]);
+        this.tuesday = ModelUtils.parseBoolean(fields[TUESDAY]);
+        this.wednesday = ModelUtils.parseBoolean(fields[WEDNESDAY]);
+        this.thursday = ModelUtils.parseBoolean(fields[THURSDAY]);
+        this.friday = ModelUtils.parseBoolean(fields[FRIDAY]);
+        this.saturday = ModelUtils.parseBoolean(fields[SATURDAY]);
+        this.sunday = ModelUtils.parseBoolean(fields[SUNDAY]);
         this.startDate = ModelUtils.parseDate(fields[START_DATE]);
         this.endDate = ModelUtils.parseDate(fields[END_DATE]);
     }
@@ -74,59 +74,59 @@ public class Calendar extends RealmObject {
         this.serviceId = serviceId;
     }
 
-    public byte getMonday() {
+    public boolean getMonday() {
         return monday;
     }
 
-    public void setMonday(byte monday) {
+    public void setMonday(boolean monday) {
         this.monday = monday;
     }
 
-    public byte getTuesday() {
+    public boolean getTuesday() {
         return tuesday;
     }
 
-    public void setTuesday(byte tuesday) {
+    public void setTuesday(boolean tuesday) {
         this.tuesday = tuesday;
     }
 
-    public byte getWednesday() {
+    public boolean getWednesday() {
         return wednesday;
     }
 
-    public void setWednesday(byte wednesday) {
+    public void setWednesday(boolean wednesday) {
         this.wednesday = wednesday;
     }
 
-    public byte getThursday() {
+    public boolean getThursday() {
         return thursday;
     }
 
-    public void setThursday(byte thursday) {
+    public void setThursday(boolean thursday) {
         this.thursday = thursday;
     }
 
-    public byte getFriday() {
+    public boolean getFriday() {
         return friday;
     }
 
-    public void setFriday(byte friday) {
+    public void setFriday(boolean friday) {
         this.friday = friday;
     }
 
-    public byte getSaturday() {
+    public boolean getSaturday() {
         return saturday;
     }
 
-    public void setSaturday(byte saturday) {
+    public void setSaturday(boolean saturday) {
         this.saturday = saturday;
     }
 
-    public byte getSunday() {
+    public boolean getSunday() {
         return sunday;
     }
 
-    public void setSunday(byte sunday) {
+    public void setSunday(boolean sunday) {
         this.sunday = sunday;
     }
 

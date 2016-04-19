@@ -34,12 +34,12 @@ public class CalendarDate extends RealmObject {
     private Date date;
     // required
     @CsvCell(columnName = "exception_type")
-    private byte exceptionType;
+    private int exceptionType;
 
     public CalendarDate(String[] fields) {
         this.serviceId = fields[SERVICE_ID];
         this.date = ModelUtils.parseDate(fields[DATE]);
-        this.exceptionType = ModelUtils.parseByte(fields[EXCEPTION_TYPE]);
+        this.exceptionType = ModelUtils.parseInt(fields[EXCEPTION_TYPE]);
         setCalendarPK(this.serviceId, this.date);
     }
 
@@ -62,7 +62,7 @@ public class CalendarDate extends RealmObject {
         this.date = date;
     }
 
-    public byte getExceptionType() {
+    public int getExceptionType() {
         return exceptionType;
     }
 
