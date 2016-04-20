@@ -2,6 +2,7 @@ package com.example.matthew.transit.model;
 
 import org.csveed.annotations.CsvCell;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -32,6 +33,9 @@ public class FareAttribute extends RealmObject {
 
     @CsvCell(columnName = "transfer_duration")
     private Integer transferDuration;
+
+    private RealmList<FareRule> fareRules;
+    private RealmList<Route> routes;
 
     public FareAttribute() {
     }
@@ -91,5 +95,21 @@ public class FareAttribute extends RealmObject {
 
     public void setTransferDuration(Integer transferDuration) {
         this.transferDuration = transferDuration;
+    }
+
+    public RealmList<Route> getRoutes() {
+        return routes;
+    }
+
+    public void setRoutes(RealmList<Route> routes) {
+        this.routes = routes;
+    }
+
+    public RealmList<FareRule> getFareRules() {
+        return fareRules;
+    }
+
+    public void setFareRules(RealmList<FareRule> fareRules) {
+        this.fareRules = fareRules;
     }
 }

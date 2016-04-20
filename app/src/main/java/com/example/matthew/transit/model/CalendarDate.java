@@ -8,6 +8,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -35,6 +36,11 @@ public class CalendarDate extends RealmObject {
     // required
     @CsvCell(columnName = "exception_type")
     private int exceptionType;
+
+    private RealmList<Trip> trips;
+    private RealmList<Route> routes;
+    private RealmList<Shape> shapes;
+
 
     public CalendarDate(String[] fields) {
         this.serviceId = fields[SERVICE_ID];
@@ -78,4 +84,27 @@ public class CalendarDate extends RealmObject {
         this.calendarPK = serviceId + dateFormat.format(date);
     }
 
+    public RealmList<Trip> getTrips() {
+        return trips;
+    }
+
+    public void setTrips(RealmList<Trip> trips) {
+        this.trips = trips;
+    }
+
+    public RealmList<Route> getRoutes() {
+        return routes;
+    }
+
+    public void setRoutes(RealmList<Route> routes) {
+        this.routes = routes;
+    }
+
+    public RealmList<Shape> getShapes() {
+        return shapes;
+    }
+
+    public void setShapes(RealmList<Shape> shapes) {
+        this.shapes = shapes;
+    }
 }

@@ -3,6 +3,7 @@ package com.example.matthew.transit.model;
 import org.csveed.annotations.CsvCell;
 import org.csveed.annotations.CsvIgnore;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -47,6 +48,13 @@ public class Route extends RealmObject {
 
     @CsvCell(columnName = "route_text_color")
     private String routeTextColor;
+
+    private RealmList<FareRule> fareRules;
+    private RealmList<FareAttribute> fareAttributes;
+    private RealmList<Trip> trips;
+    private RealmList<Shape> shapes;
+    private RealmList<Calendar> calendars;
+    private RealmList<CalendarDate> calendarDates;
 
     public Route() {
     }
@@ -130,5 +138,53 @@ public class Route extends RealmObject {
 
     public void setRouteTextColor(String routeTextColor) {
         this.routeTextColor = routeTextColor;
+    }
+
+    public RealmList<FareRule> getFareRules() {
+        return fareRules;
+    }
+
+    public void setFareRules(RealmList<FareRule> fareRules) {
+        this.fareRules = fareRules;
+    }
+
+    public RealmList<FareAttribute> getFareAttributes() {
+        return fareAttributes;
+    }
+
+    public void setFareAttributes(RealmList<FareAttribute> fareAttributes) {
+        this.fareAttributes = fareAttributes;
+    }
+
+    public RealmList<Trip> getTrips() {
+        return trips;
+    }
+
+    public void setTrips(RealmList<Trip> trips) {
+        this.trips = trips;
+    }
+
+    public RealmList<Shape> getShapes() {
+        return shapes;
+    }
+
+    public void setShapes(RealmList<Shape> shapes) {
+        this.shapes = shapes;
+    }
+
+    public RealmList<Calendar> getCalendars() {
+        return calendars;
+    }
+
+    public void setCalendars(RealmList<Calendar> calendars) {
+        this.calendars = calendars;
+    }
+
+    public RealmList<CalendarDate> getCalendarDates() {
+        return calendarDates;
+    }
+
+    public void setCalendarDates(RealmList<CalendarDate> calendarDates) {
+        this.calendarDates = calendarDates;
     }
 }

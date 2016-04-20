@@ -3,6 +3,7 @@ package com.example.matthew.transit.model;
 import org.csveed.annotations.CsvCell;
 import org.csveed.annotations.CsvIgnore;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -36,6 +37,11 @@ public class Shape extends RealmObject {
     @CsvIgnore
     @CsvCell(columnName = "shape_dist_traveled")
     private Double shapeDistTraveled;
+
+    private RealmList<Trip> trips;
+    private RealmList<Route> routes;
+    private RealmList<Calendar> calendars;
+    private RealmList<CalendarDate> calendarDates;
 
     public Shape(String[] fields) {
         this.shapeId = fields[SHAPE_ID];
@@ -96,4 +102,35 @@ public class Shape extends RealmObject {
         this.shapeDistTraveled = shapeDistTraveled;
     }
 
+    public RealmList<Trip> getTrips() {
+        return trips;
+    }
+
+    public void setTrips(RealmList<Trip> trips) {
+        this.trips = trips;
+    }
+
+    public RealmList<Route> getRoutes() {
+        return routes;
+    }
+
+    public void setRoutes(RealmList<Route> routes) {
+        this.routes = routes;
+    }
+
+    public RealmList<Calendar> getCalendars() {
+        return calendars;
+    }
+
+    public void setCalendars(RealmList<Calendar> calendars) {
+        this.calendars = calendars;
+    }
+
+    public RealmList<CalendarDate> getCalendarDates() {
+        return calendarDates;
+    }
+
+    public void setCalendarDates(RealmList<CalendarDate> calendarDates) {
+        this.calendarDates = calendarDates;
+    }
 }

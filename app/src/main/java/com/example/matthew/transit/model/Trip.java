@@ -3,6 +3,7 @@ package com.example.matthew.transit.model;
 import org.csveed.annotations.CsvCell;
 import org.csveed.annotations.CsvIgnore;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -48,6 +49,9 @@ public class Trip extends RealmObject {
     @CsvIgnore
     @CsvCell(columnName = "bikes_allowed")
     private Byte bikesAllowed;
+
+    private RealmList<StopTime> stopTimes;
+    private RealmList<Stop> stops;
 
     public Trip() {
     }
@@ -141,5 +145,21 @@ public class Trip extends RealmObject {
 
     public void setBikesAllowed(Byte bikesAllowed) {
         this.bikesAllowed = bikesAllowed;
+    }
+
+    public RealmList<StopTime> getStopTimes() {
+        return stopTimes;
+    }
+
+    public void setStopTimes(RealmList<StopTime> stopTimes) {
+        this.stopTimes = stopTimes;
+    }
+
+    public RealmList<Stop> getStops() {
+        return stops;
+    }
+
+    public void setStops(RealmList<Stop> stops) {
+        this.stops = stops;
     }
 }

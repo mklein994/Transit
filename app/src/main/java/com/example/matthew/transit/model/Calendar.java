@@ -5,6 +5,7 @@ import org.csveed.annotations.CsvDate;
 
 import java.util.Date;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -49,6 +50,10 @@ public class Calendar extends RealmObject {
     @CsvCell(columnName = "end_date")
     @CsvDate(format = "yyyyMMdd")
     private Date endDate;
+
+    private RealmList<Trip> trips;
+    private RealmList<Route> routes;
+    private RealmList<Shape> shapes;
 
     public Calendar() {
     }
@@ -146,4 +151,27 @@ public class Calendar extends RealmObject {
         this.endDate = endDate;
     }
 
+    public RealmList<Trip> getTrips() {
+        return trips;
+    }
+
+    public void setTrips(RealmList<Trip> trips) {
+        this.trips = trips;
+    }
+
+    public RealmList<Route> getRoutes() {
+        return routes;
+    }
+
+    public void setRoutes(RealmList<Route> routes) {
+        this.routes = routes;
+    }
+
+    public RealmList<Shape> getShapes() {
+        return shapes;
+    }
+
+    public void setShapes(RealmList<Shape> shapes) {
+        this.shapes = shapes;
+    }
 }
