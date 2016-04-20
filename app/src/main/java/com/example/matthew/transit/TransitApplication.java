@@ -14,6 +14,9 @@ public class TransitApplication extends Application {
         super.onCreate();
 
         RealmConfiguration config = new RealmConfiguration.Builder(this).build();
+
+        Realm.deleteRealm(config);
+
         Realm.setDefaultConfiguration(config);
     }
 }
