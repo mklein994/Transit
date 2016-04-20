@@ -43,7 +43,7 @@ public class Trip extends RealmObject {
     @CsvCell(columnName = "shape_id")
     private String shapeId;
     @CsvCell(columnName = "wheelchair_accessible")
-    private Boolean wheelchairAccessible;
+    private Integer wheelchairAccessible;
     @Ignore
     @CsvIgnore
     @CsvCell(columnName = "bikes_allowed")
@@ -60,7 +60,7 @@ public class Trip extends RealmObject {
         this.directionId = ModelUtils.parseBoolean(fields[DIRECTION_ID]);
         this.blockId = fields[BLOCK_ID];
         this.shapeId = fields[SHAPE_ID];
-        this.wheelchairAccessible = ModelUtils.parseBoolean(fields[WHEELCHAIR_ACCESSIBLE]);
+        this.wheelchairAccessible = ModelUtils.parseInt(fields[WHEELCHAIR_ACCESSIBLE]);
     }
 
     public String getRouteId() {
@@ -127,11 +127,11 @@ public class Trip extends RealmObject {
         this.shapeId = shapeId;
     }
 
-    public Boolean getWheelchairAccessible() {
+    public Integer getWheelchairAccessible() {
         return wheelchairAccessible;
     }
 
-    public void setWheelchairAccessible(Boolean wheelchairAccessible) {
+    public void setWheelchairAccessible(Integer wheelchairAccessible) {
         this.wheelchairAccessible = wheelchairAccessible;
     }
 
