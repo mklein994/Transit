@@ -46,13 +46,13 @@ class ModelUtils {
     }
 
     public static boolean parseBoolean(String booleanToBeParsed) throws IllegalArgumentException {
-        int booleanAsInt = parseInt(booleanToBeParsed);
-        if (booleanAsInt == 0) {
-            return false;
-        } else if (booleanAsInt == 1) {
-            return true;
-        } else {
-            throw new IllegalArgumentException("boolean to be parsed should be a 1 or 0.");
+        switch (booleanToBeParsed) {
+            case "0":
+                return false;
+            case "1":
+                return true;
+            default:
+                throw new IllegalArgumentException(String.format("boolean to be parsed (%s) should be a 1 or 0.", booleanToBeParsed));
         }
     }
 }
