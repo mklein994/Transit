@@ -22,11 +22,13 @@ import io.realm.Realm;
 
 public class ModelManager {
 
+    private static final String TAG = ModelManager.class.getName();
+
     public static void importAgencies(Realm realm, CSVReader reader) throws IOException {
         String[] nextLine;
 
         while ((nextLine = reader.readNext()) != null) {
-            realm.copyToRealmOrUpdate(new Agency(nextLine));
+            realm.copyToRealm(new Agency(nextLine));
         }
 
     }
