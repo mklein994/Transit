@@ -11,11 +11,21 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.matthew.transit.model.Agency;
+import com.example.matthew.transit.model.Calendar;
+import com.example.matthew.transit.model.CalendarDate;
+import com.example.matthew.transit.model.FareAttribute;
+import com.example.matthew.transit.model.FareRule;
+import com.example.matthew.transit.model.Route;
+import com.example.matthew.transit.model.Shape;
+import com.example.matthew.transit.model.Stop;
+import com.example.matthew.transit.model.StopTime;
+import com.example.matthew.transit.model.Trip;
 import com.opencsv.CSVReader;
+import com.opencsv.CSVReaderBuilder;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -24,20 +34,14 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import io.realm.DynamicRealm;
-import io.realm.DynamicRealmObject;
-import io.realm.RealmConfiguration;
+import io.realm.Realm;
 
 public class MainActivity extends Activity {
-    private static final HashMap<String, String> FILE_CLASS_MAP = createFileClassMap();
+    private static final String TAG = MainActivity.class.getName();
     private static final String FILE_NAME = "gtfs.zip";
     private static DownloadManager manager = null;
     private static long downloadReference;
@@ -53,25 +57,19 @@ public class MainActivity extends Activity {
             processDownload();
         }
     };
+    private Realm realm;
     private SharedPreferences settings;
 
-    private static HashMap<String, String> createFileClassMap() {
-        HashMap<String, String> fileClassMap = new HashMap<>();
-
-        fileClassMap.put("agency.txt", "Agency");
-        fileClassMap.put("calendar_dates.txt", "CalendarDate");
-        fileClassMap.put("calendar.txt", "Calendar");
-        fileClassMap.put("fare_attributes.txt", "FareAttribute");
-        fileClassMap.put("fare_rules.txt", "FareRule");
-        fileClassMap.put("feed_info.txt", "FeedInfo");
-        fileClassMap.put("frequencies.txt", "Frequency");
-        fileClassMap.put("shapes.txt", "Shape");
-        fileClassMap.put("stops.txt", "Stop");
-        fileClassMap.put("stop_times.txt", "StopTime");
-        fileClassMap.put("transfers.txt", "Transfer");
-        fileClassMap.put("trips.txt", "Trip");
-
-        return fileClassMap;
+    private CSVReader getCSVReader(File file) {
+        CSVReader reader = null;
+        try {
+            reader = new CSVReaderBuilder(new FileReader(file))
+                    .withSkipLines(1)
+                    .build();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return reader;
     }
 
     private void processDownload() {
@@ -84,10 +82,11 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
 
-        ArrayList<File> files = extractFiles(pfd);
+        //ArrayList<File> files = extractFiles(pfd);
+        File[] files = extractFiles(pfd);
         processFiles(files);
+        //new DatabaseImportTask().execute(files);
     }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,8 +99,10 @@ public class MainActivity extends Activity {
 
         downloadReference = settings.getLong("lastTransitDownload", -1);
 
+        //realm = Realm.getDefaultInstance();
+
         //if download exists...
-        if (downloadExists() != null) {
+        if (downloadExists()) {
             processDownload();
         } else {
             // later calls processDownload
@@ -114,25 +115,31 @@ public class MainActivity extends Activity {
      *
      * @return the previously downloaded file (from this app) or null if it doesn't exist
      */
-    private File downloadExists() {
+    private boolean downloadExists() {
         DownloadManager.Query query = new DownloadManager.Query();
         query.setFilterById(downloadReference);
         Cursor cursor = manager.query(query);
 
-        File file = null;
+        boolean downloadExists = false;
 
         // check that the cursor managed to find the download
         if (cursor.moveToFirst()) {
             int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
             if (status == DownloadManager.STATUS_SUCCESSFUL) {
                 String fileName = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
-                Log.d("fileName", fileName);
-                file = new File(fileName);
+
+                //Log.d("fileName", fileName);
+
+                File file = new File(fileName);
+
+                downloadExists = file.exists();
+            } else {
+                downloadExists = false;
+                Log.e("Download Error", "Download file status is " + status);
             }
             //cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
         }
-
-        return file;
+        return downloadExists;
     }
 
     /**
@@ -159,7 +166,8 @@ public class MainActivity extends Activity {
         downloadReference = manager.enqueue(new DownloadManager.Request(builder.build())
                 .setDescription("Downloading Today's Transit Data…")
                 .setTitle("Getting the latest transit information")
-                .setVisibleInDownloadsUi(false)
+                //.setVisibleInDownloadsUi(false)
+                .setVisibleInDownloadsUi(true)
                 .setDestinationInExternalFilesDir(this, null, FILE_NAME)
                 .setNotificationVisibility(DownloadManager.Request.VISIBILITY_VISIBLE));
 
@@ -180,193 +188,37 @@ public class MainActivity extends Activity {
 
         unregisterReceiver(onComplete);
         unregisterReceiver(onNotificationClick);
-    }
-
-    /**
-     * process each csv file into an array and add to the database
-     *
-     * @param files csv files to be processed
-     */
-    private void processFiles(ArrayList<File> files) {
-
-        try (DynamicRealm realm = DynamicRealm.getInstance(new RealmConfiguration.Builder(getApplicationContext()).build())) {
-
-            ArrayList<DynamicRealmObject> allClasses = new ArrayList<>();
-
-            //region beginTransaction()
-            // start the transaction
-            //realm.beginTransaction();
-
-            for (File file :
-                    files) {
-                try {
-                    try (CSVReader reader = new CSVReader(new FileReader(file))) {
-
-                        String[] headers = getHeaders(reader);
-
-
-                        String className = FILE_CLASS_MAP.get(file.getName());
-
-                        Log.d("Class description", "class name: " + className + " headers: " + Arrays.toString(headers));
-                        ArrayList<DynamicRealmObject> classList = new ArrayList<>();
-                        String[] nextLine;
-
-                        try {
-                            // loop through each line
-                            while ((nextLine = reader.readNext()) != null) {
-
-                                // FIXME: 13/04/16 In this case, the transaction is opened and closed for each and every record. Should this happen? Most likely not.
-                                // TODO: 13/04/16 Check this out for ideas:
-                                // Import strategy: https://github.com/DanielGrech/sydtrip/blob/exp/otp_routing/android/data/src/main/java/com/dgsd/android/data/importer/ImportManager.java
-                                // Build a constructor using String[]: https://github.com/DanielGrech/sydtrip/blob/exp/otp_routing/android/data/src/main/java/com/dgsd/android/data/model/DbRoute.java
-                                realm.beginTransaction();
-                                // create an instance of the class to hold the record
-                                DynamicRealmObject classInstance =
-                                        new DynamicRealmObject(realm.createObject(className));
-
-                                // e.g. January 4, 2016 => 20160104
-                                SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-
-                                // loop through the headers and dynamically set the class's properties
-                                for (int i = 0; i < headers.length; i++) {
-                                    switch (classInstance.getFieldType(headers[i])) {
-                                        case INTEGER:
-                                            classInstance.setInt(headers[i], Integer.parseInt(nextLine[i]));
-                                            break;
-                                        case BOOLEAN:
-                                            classInstance.setBoolean(headers[i], Boolean.parseBoolean(nextLine[i]));
-                                            break;
-                                        case STRING:
-                                            classInstance.setString(headers[i], nextLine[i]);
-                                            break;
-                                        //case BINARY: classInstance.setString(headers[i], nextLine[i]); break;
-                                        //case UNSUPPORTED_TABLE: classInstance.setString(headers[i], nextLine[i]); break;
-                                        //case UNSUPPORTED_MIXED: classInstance.setString(headers[i], nextLine[i]); break;
-                                        case DATE:
-                                            classInstance.setDate(headers[i], dateFormat.parse(nextLine[i]));
-                                            break;
-                                        case FLOAT:
-                                            classInstance.setFloat(headers[i], Float.parseFloat(nextLine[i]));
-                                            break;
-                                        case DOUBLE:
-                                            classInstance.setDouble(headers[i], Double.parseDouble(nextLine[i]));
-                                            break;
-                                        //case OBJECT: classInstance.setString(headers[i], nextLine[i]); break;
-                                        //case LIST: classInstance.setString(headers[i], nextLine[i]); break;
-                                        default:
-                                            Log.d("Insert Error", String.format("field type: %s i: %d", classInstance.getFieldType(headers[i]), i));
-                                    }
-                                }
-                                realm.commitTransaction();
-
-                                classList.add(classInstance);
-                            }
-                        } catch (IOException | ParseException e) {
-                            e.printStackTrace();
-                        }
-
-                        allClasses.addAll(classList);
-
-                        //region case switch statement
-                    /*
-                    switch (file.getName()) {
-                        case "agency.txt":
-                            //parseClass(className, headers, realm, reader, headers, realm);
-                            insertClass(className, reader, headers, realm);
-                            break;
-                        case "calendar_dates.txt":
-                            insertCalendarDates(reader, headers, realm);
-                            break;
-                        case "calendar.txt":
-                            insertCalendars(reader, headers, realm);
-                            break;
-                        case "fare_attributes.txt":
-                            insertFareAttributes(reader, headers, realm);
-                            break;
-                        case "fare_rules.txt":
-                            insertFareRules(reader, headers, realm);
-                            break;
-                        case "feed_info.txt":
-                            insertFeedInfo(reader, headers, realm);
-                            break;
-                        case "frequencies.txt":
-                            insertFrequencies(reader, headers, realm);
-                            break;
-                        case "routes.txt":
-                            insertRoutes(reader, headers, realm);
-                            break;
-                        case "shapes.txt":
-                            insertShapes(reader, headers, realm);
-                            break;
-                        case "stops.txt":
-                            insertStops(reader, headers, realm);
-                            break;
-                        case "stop_times.txt":
-                            insertStopTimes(reader, headers, realm);
-                            break;
-                        case "transfers.txt":
-                            insertTransfers(reader, headers, realm);
-                            break;
-                        case "trips.txt":
-                            insertTrips(reader, headers, realm);
-                            break;
-                        default:
-                            break;
-                    }
-                    */
-                        //endregion
-
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-
-            Log.d("Update results", String.valueOf(allClasses.size()));
-
-            // commit all changes
-            //realm.commitTransaction();
-            //endregion
+        if (!realm.isClosed()) {
+            realm.close();
         }
     }
 
-    private String[] getHeaders(CSVReader reader) {
-        String[] headers = null;
-
-        try {
-            headers = reader.readNext();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return headers;
-    }
-
-    @NonNull
-    private ArrayList<File> extractFiles(ParcelFileDescriptor param) {
+    private File[] extractFiles(ParcelFileDescriptor pfd) {
         ArrayList<File> files = new ArrayList<>();
 
         // open the zip file
-        try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new ParcelFileDescriptor.AutoCloseInputStream(param)))) {
+        try {
+            try (ZipInputStream zipInput = new ZipInputStream(new BufferedInputStream(new ParcelFileDescriptor.AutoCloseInputStream(pfd)))) {
 
-            ZipEntry zipEntry;
+                ZipEntry zipEntry;
 
-            // loop through each file within the zip file
-            while ((zipEntry = zipInput.getNextEntry()) != null) {
+                // loop through each file within the zip file
+                while ((zipEntry = zipInput.getNextEntry()) != null) {
 
-                File file = new File(getFilesDir(), zipEntry.getName());
-                if (!file.getName().equals("LICENCE")) {
-                    files.add(file);
-                    Log.d("File name", file.getName());
+                    File file = new File(getFilesDir(), zipEntry.getName());
+                    if (!file.getName().equals("LICENCE")) {
+                        files.add(file);
+                        Log.d("File name", file.getName());
 
-                    // save each file
-                    try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file, false))) {
+                        // save each file
+                        try (BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(file, false))) {
 
-                        byte[] buffer = new byte[1024];
-                        int count;
+                            byte[] buffer = new byte[1024];
+                            int count;
 
-                        while ((count = zipInput.read(buffer)) != -1) {
-                            out.write(buffer, 0, count);
+                            while ((count = zipInput.read(buffer)) != -1) {
+                                out.write(buffer, 0, count);
+                            }
                         }
                     }
                 }
@@ -375,8 +227,98 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
 
-        return files;
-
-        //parseFiles(files);
+        File[] fileList = new File[files.size()];
+        fileList = files.toArray(fileList);
+        return fileList;
     }
+
+    private void processFiles(File[] files) {
+        try (Realm realm = Realm.getDefaultInstance()) {
+
+            ArrayList<String> fileNames = new ArrayList<>();
+            // FIXME: 16/04/16 CSVReader is final, so setting it won't change anything about it, including the number of lines read.
+            final ArrayList<CSVReader> readers = new ArrayList<>();
+
+            for (File file :
+                    files) {
+                fileNames.add(file.getName());
+                readers.add(getCSVReader(file));
+            }
+
+            final int AGENCY_INDEX = (fileNames.indexOf("agency.txt"));
+            final int STOP_TIMES_INDEX = (fileNames.indexOf("stop_times.txt"));
+            final int TRIPS_INDEX = (fileNames.indexOf("trips.txt"));
+            final int FARE_RULES_INDEX = (fileNames.indexOf("fare_rules.txt"));
+            final int STOPS_INDEX = (fileNames.indexOf("stops.txt"));
+            final int SHAPES_INDEX = (fileNames.indexOf("shapes.txt"));
+            final int ROUTES_INDEX = (fileNames.indexOf("routes.txt"));
+            final int FARE_ATTRIBUTES_INDEX = (fileNames.indexOf("fare_attributes.txt"));
+            final int CALENDAR_DATES_INDEX = (fileNames.indexOf("calendar_dates.txt"));
+            final int CALENDARS_INDEX = (fileNames.indexOf("calendar.txt"));
+
+            realm.executeTransactionAsync(new Realm.Transaction() {
+                @Override
+                public void execute(Realm bgRealm) {
+                    try {
+                        ModelManager.importAgencies(bgRealm, readers.get(AGENCY_INDEX));
+                        Log.d(TAG, String.format("processFiles: Agencies imported: %d", bgRealm.where(Agency.class).findAll().size()));
+
+                        ModelManager.importCalendars(bgRealm, readers.get(CALENDARS_INDEX));
+                        Log.d(TAG, String.format("processFiles: calendars imported: %d", bgRealm.where(Calendar.class).findAll().size()));
+                        ModelManager.importCalendarDates(bgRealm, readers.get(CALENDAR_DATES_INDEX));
+                        Log.d(TAG, String.format("processFiles: calendar dates imported: %d", bgRealm.where(CalendarDate.class).findAll().size()));
+                        ModelManager.importFareAttributes(bgRealm, readers.get(FARE_ATTRIBUTES_INDEX));
+                        Log.d(TAG, String.format("processFiles: fare attributes imported: %d", bgRealm.where(FareAttribute.class).findAll().size()));
+                        ModelManager.importRoutes(bgRealm, readers.get(ROUTES_INDEX));
+                        Log.d(TAG, String.format("processFiles: routes imported: %d", bgRealm.where(Route.class).findAll().size()));
+                        ModelManager.importShapes(bgRealm, readers.get(SHAPES_INDEX));
+                        Log.d(TAG, String.format("processFiles: shapes imported: %d", bgRealm.where(Shape.class).findAll().size()));
+                        ModelManager.importStops(bgRealm, readers.get(STOPS_INDEX));
+                        Log.d(TAG, String.format("processFiles: stops imported: %d", bgRealm.where(Stop.class).findAll().size()));
+
+                        ModelManager.importFareRules(bgRealm, readers.get(FARE_RULES_INDEX));
+                        Log.d(TAG, String.format("processFiles: fare rules imported: %d", bgRealm.where(FareRule.class).findAll().size()));
+                        ModelManager.importTrips(bgRealm, readers.get(TRIPS_INDEX));
+                        Log.d(TAG, String.format("processFiles: trips imported: %d", bgRealm.where(Trip.class).findAll().size()));
+
+                        ModelManager.importStopTimes(bgRealm, readers.get(STOP_TIMES_INDEX));
+                        Log.d(TAG, String.format("processFiles: stop times imported: %d", bgRealm.where(StopTime.class).findAll().size()));
+                    } catch (IOException e) {
+                        Log.d(TAG, "execute: Import failed, there was an exception from parsing the csv files.");
+                        e.printStackTrace();
+                    }
+                }
+            }, new Realm.Transaction.OnSuccess() {
+                @Override
+                public void onSuccess() {
+                    Log.d(TAG, "onSuccess: test query: find fare attributes where route is 44: " +
+                            realm.where(FareAttribute.class).equalTo("routes.routeId", "44").findFirst());
+
+                }
+            }, new Realm.Transaction.OnError() {
+                @Override
+                public void onError(Throwable error) {
+                    Log.d(TAG, "onError: Error occurred while importing!");
+                    error.printStackTrace();
+                }
+            });
+        }
+    }
+
+    /*
+    class DatabaseImportTask extends AsyncTask<File, Void, Void> {
+
+        @Override
+        protected Void doInBackground(File... files) {
+            processFiles(files);
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            Log.d(TAG, "onPostExecute: Import Successful!");
+        }
+    }
+    */
 }
