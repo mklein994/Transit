@@ -12,8 +12,8 @@ import io.realm.annotations.Required;
  * Created by matthew on 11/04/16.
  */
 public class FareRule extends RealmObject {
-    private static final int FARE_ID = 0;
-    private static final int ROUTE_ID = 1;
+    public static final int FARE_ID = 0;
+    public static final int ROUTE_ID = 1;
     // added to create a composite key from fareId and routeId
     @PrimaryKey
     @CsvIgnore
@@ -35,6 +35,9 @@ public class FareRule extends RealmObject {
     @CsvIgnore
     @CsvCell(columnName = "contains_id")
     private String containsId;
+
+    private Route route;
+    private FareAttribute fareAttribute;
 
     public FareRule() {
     }
@@ -91,5 +94,21 @@ public class FareRule extends RealmObject {
 
     public void setFareRoutePK(String routeId, String fareId) {
         this.fareRoutePK = routeId + fareId;
+    }
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public void setRoute(Route route) {
+        this.route = route;
+    }
+
+    public FareAttribute getFareAttribute() {
+        return fareAttribute;
+    }
+
+    public void setFareAttribute(FareAttribute fareAttribute) {
+        this.fareAttribute = fareAttribute;
     }
 }

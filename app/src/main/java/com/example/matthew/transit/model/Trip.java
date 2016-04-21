@@ -14,14 +14,14 @@ import io.realm.annotations.Required;
  */
 public class Trip extends RealmObject {
 
-    private static final int ROUTE_ID = 0;
-    private static final int SERVICE_ID = 1;
-    private static final int TRIP_ID = 2;
-    private static final int TRIP_HEADSIGN = 3;
-    private static final int DIRECTION_ID = 4;
-    private static final int BLOCK_ID = 5;
-    private static final int SHAPE_ID = 6;
-    private static final int WHEELCHAIR_ACCESSIBLE = 7;
+    public static final int ROUTE_ID = 0;
+    public static final int SERVICE_ID = 1;
+    public static final int TRIP_ID = 2;
+    public static final int TRIP_HEADSIGN = 3;
+    public static final int DIRECTION_ID = 4;
+    public static final int BLOCK_ID = 5;
+    public static final int SHAPE_ID = 6;
+    public static final int WHEELCHAIR_ACCESSIBLE = 7;
     @Required
     @CsvCell(columnName = "route_id")
     private String routeId;
@@ -52,6 +52,11 @@ public class Trip extends RealmObject {
 
     private RealmList<StopTime> stopTimes;
     private RealmList<Stop> stops;
+
+    private Calendar calendar;
+    private CalendarDate calendarDate;
+    private Route route;
+    private Shape shape;
 
     public Trip() {
     }
@@ -161,5 +166,37 @@ public class Trip extends RealmObject {
 
     public void setStops(RealmList<Stop> stops) {
         this.stops = stops;
+    }
+
+    public Calendar getCalendar() {
+        return calendar;
+    }
+
+    public void setCalendar(Calendar calendar) {
+        this.calendar = calendar;
+    }
+
+    public CalendarDate getCalendarDate() {
+        return calendarDate;
+    }
+
+    public void setCalendarDate(CalendarDate calendarDate) {
+        this.calendarDate = calendarDate;
+    }
+
+    public Route getRoute() {
+        return route;
+    }
+
+    public void setRoute(Route route) {
+        this.route = route;
+    }
+
+    public Shape getShape() {
+        return shape;
+    }
+
+    public void setShape(Shape shape) {
+        this.shape = shape;
     }
 }

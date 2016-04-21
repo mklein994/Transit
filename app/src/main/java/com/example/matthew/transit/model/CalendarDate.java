@@ -8,7 +8,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 import io.realm.annotations.Required;
@@ -17,10 +16,10 @@ import io.realm.annotations.Required;
  * Created by matthew on 11/04/16.
  */
 public class CalendarDate extends RealmObject {
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.CANADA);
-    private static final int SERVICE_ID = 0;
-    private static final int DATE = 1;
-    private static final int EXCEPTION_TYPE = 2;
+    public static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.CANADA);
+    public static final int SERVICE_ID = 0;
+    public static final int DATE = 1;
+    public static final int EXCEPTION_TYPE = 2;
 
     // added manually as a foreign key between serviceId and date
     @CsvIgnore
@@ -37,9 +36,10 @@ public class CalendarDate extends RealmObject {
     @CsvCell(columnName = "exception_type")
     private int exceptionType;
 
-    private RealmList<Trip> trips;
-    private RealmList<Route> routes;
-    private RealmList<Shape> shapes;
+    private Calendar calendar;
+    //private RealmList<Trip> trips;
+    //private RealmList<Route> routes;
+    //private RealmList<Shape> shapes;
 
 
     public CalendarDate(String[] fields) {
@@ -72,7 +72,7 @@ public class CalendarDate extends RealmObject {
         return exceptionType;
     }
 
-    public void setExceptionType(byte exceptionType) {
+    public void setExceptionType(Integer exceptionType) {
         this.exceptionType = exceptionType;
     }
 
@@ -84,6 +84,7 @@ public class CalendarDate extends RealmObject {
         this.calendarPK = serviceId + dateFormat.format(date);
     }
 
+    /*
     public RealmList<Trip> getTrips() {
         return trips;
     }
@@ -106,5 +107,14 @@ public class CalendarDate extends RealmObject {
 
     public void setShapes(RealmList<Shape> shapes) {
         this.shapes = shapes;
+    }
+    */
+
+    public Calendar getCalendar() {
+        return calendar;
+    }
+
+    public void setCalendar(Calendar calendar) {
+        this.calendar = calendar;
     }
 }

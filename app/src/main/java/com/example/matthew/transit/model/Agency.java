@@ -14,11 +14,11 @@ import io.realm.annotations.Required;
 @CsvFile(mappingStrategy = ColumnNameMapper.class, separator = ',')
 public class Agency extends RealmObject {
 
-    private static final int AGENCY_NAME = 0;
-    private static final int AGENCY_URL = 1;
-    private static final int AGENCY_TIMEZONE = 2;
-    private static final int AGENCY_LANG = 3;
-    private static final int AGENCY_PHONE = 4;
+    public static final int AGENCY_NAME = 0;
+    public static final int AGENCY_URL = 1;
+    public static final int AGENCY_TIMEZONE = 2;
+    public static final int AGENCY_LANG = 3;
+    public static final int AGENCY_PHONE = 4;
 
     // should be the primary key, except that it can be null.
     @Ignore

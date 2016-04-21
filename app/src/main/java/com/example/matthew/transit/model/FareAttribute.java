@@ -11,12 +11,12 @@ import io.realm.annotations.Required;
  * Created by matthew on 11/04/16.
  */
 public class FareAttribute extends RealmObject {
-    private static final int FARE_ID = 0;
-    private static final int PRICE = 1;
-    private static final int CURRENCY_TYPE = 2;
-    private static final int PAYMENT_METHOD = 3;
-    private static final int TRANSFERS = 4;
-    private static final int TRANSFER_DURATION = 5;
+    public static final int FARE_ID = 0;
+    public static final int PRICE = 1;
+    public static final int CURRENCY_TYPE = 2;
+    public static final int PAYMENT_METHOD = 3;
+    public static final int TRANSFERS = 4;
+    public static final int TRANSFER_DURATION = 5;
     @PrimaryKey
     @CsvCell(columnName = "fare_id")
     private String fareId;

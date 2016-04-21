@@ -13,11 +13,11 @@ import io.realm.annotations.Required;
  * Created by matthew on 11/04/16.
  */
 public class StopTime extends RealmObject {
-    private static final int TRIP_ID = 0;
-    private static final int ARRIVAL_TIME = 1;
-    private static final int DEPARTURE_TIME = 2;
-    private static final int STOP_ID = 3;
-    private static final int STOP_SEQUENCE = 4;
+    public static final int TRIP_ID = 0;
+    public static final int ARRIVAL_TIME = 1;
+    public static final int DEPARTURE_TIME = 2;
+    public static final int STOP_ID = 3;
+    public static final int STOP_SEQUENCE = 4;
 
     // added as a composite key between tripId and stopSequence
     @PrimaryKey
@@ -59,6 +59,9 @@ public class StopTime extends RealmObject {
     @Ignore
     @CsvIgnore
     private Byte timepoint;
+
+    private Stop stop;
+    private Trip trip;
 
     public StopTime() {
     }
@@ -160,4 +163,19 @@ public class StopTime extends RealmObject {
         this.stopTimePK = tripId + stopSequence;
     }
 
+    public Stop getStop() {
+        return stop;
+    }
+
+    public void setStop(Stop stop) {
+        this.stop = stop;
+    }
+
+    public Trip getTrip() {
+        return trip;
+    }
+
+    public void setTrip(Trip trip) {
+        this.trip = trip;
+    }
 }

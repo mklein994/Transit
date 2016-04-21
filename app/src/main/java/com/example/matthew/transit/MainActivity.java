@@ -19,6 +19,7 @@ import com.example.matthew.transit.model.Calendar;
 import com.example.matthew.transit.model.CalendarDate;
 import com.example.matthew.transit.model.FareAttribute;
 import com.example.matthew.transit.model.FareRule;
+import com.example.matthew.transit.model.RelationshipManager;
 import com.example.matthew.transit.model.Route;
 import com.example.matthew.transit.model.Shape;
 import com.example.matthew.transit.model.Stop;
@@ -39,12 +40,15 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
 import io.realm.Realm;
+import io.realm.RealmAsyncTask;
 
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getName();
     private static final String FILE_NAME = "gtfs.zip";
     private static DownloadManager manager = null;
     private static long downloadReference;
+    private Realm realm;
+    private RealmAsyncTask transaction;
     private final BroadcastReceiver onNotificationClick = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -57,7 +61,6 @@ public class MainActivity extends Activity {
             processDownload();
         }
     };
-    private Realm realm;
     private SharedPreferences settings;
 
     private CSVReader getCSVReader(File file) {
@@ -86,6 +89,14 @@ public class MainActivity extends Activity {
         File[] files = extractFiles(pfd);
         processFiles(files);
         //new DatabaseImportTask().execute(files);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (transaction != null && !transaction.isCancelled()) {
+            transaction.cancel();
+        }
     }
 
     @Override
@@ -188,9 +199,11 @@ public class MainActivity extends Activity {
 
         unregisterReceiver(onComplete);
         unregisterReceiver(onNotificationClick);
+        /*
         if (!realm.isClosed()) {
             realm.close();
         }
+        */
     }
 
     private File[] extractFiles(ParcelFileDescriptor pfd) {
@@ -233,7 +246,8 @@ public class MainActivity extends Activity {
     }
 
     private void processFiles(File[] files) {
-        try (Realm realm = Realm.getDefaultInstance()) {
+        realm = Realm.getDefaultInstance();
+        try {
 
             ArrayList<String> fileNames = new ArrayList<>();
             // FIXME: 16/04/16 CSVReader is final, so setting it won't change anything about it, including the number of lines read.
@@ -256,7 +270,7 @@ public class MainActivity extends Activity {
             final int CALENDAR_DATES_INDEX = (fileNames.indexOf("calendar_dates.txt"));
             final int CALENDARS_INDEX = (fileNames.indexOf("calendar.txt"));
 
-            realm.executeTransactionAsync(new Realm.Transaction() {
+            transaction = realm.executeTransactionAsync(new Realm.Transaction() {
                 @Override
                 public void execute(Realm bgRealm) {
                     try {
@@ -283,17 +297,22 @@ public class MainActivity extends Activity {
 
                         ModelManager.importStopTimes(bgRealm, readers.get(STOP_TIMES_INDEX));
                         Log.d(TAG, String.format("processFiles: stop times imported: %d", bgRealm.where(StopTime.class).findAll().size()));
+
+                        RelationshipManager.setOneToManyRelationships(realm);
+                        Log.d(TAG, "execute: Relationships established.");
+
                     } catch (IOException e) {
                         Log.d(TAG, "execute: Import failed, there was an exception from parsing the csv files.");
                         e.printStackTrace();
+                        bgRealm.cancelTransaction();
                     }
                 }
             }, new Realm.Transaction.OnSuccess() {
                 @Override
                 public void onSuccess() {
-                    Log.d(TAG, "onSuccess: test query: find fare attributes where route is 44: " +
-                            realm.where(FareAttribute.class).equalTo("routes.routeId", "44").findFirst());
-
+                    Log.d(TAG, "onSuccess: Import was successful!");
+                    //Log.d(TAG, "onSuccess: test query: find fare attributes where route is 44: " +
+                            //realm.where(FareAttribute.class).equalTo("routes.routeId", "44").findFirst());
                 }
             }, new Realm.Transaction.OnError() {
                 @Override
@@ -302,23 +321,11 @@ public class MainActivity extends Activity {
                     error.printStackTrace();
                 }
             });
+
+
+
+        } finally {
+            realm.close();
         }
     }
-
-    /*
-    class DatabaseImportTask extends AsyncTask<File, Void, Void> {
-
-        @Override
-        protected Void doInBackground(File... files) {
-            processFiles(files);
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Log.d(TAG, "onPostExecute: Import Successful!");
-        }
-    }
-    */
 }

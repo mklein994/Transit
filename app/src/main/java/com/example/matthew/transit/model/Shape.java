@@ -13,10 +13,10 @@ import io.realm.annotations.Required;
  * Created by matthew on 11/04/16.
  */
 public class Shape extends RealmObject {
-    private static final int SHAPE_ID = 0;
-    private static final int SHAPE_PT_LAT = 1;
-    private static final int SHAPE_PT_LON = 2;
-    private static final int SHAPE_PT_SEQUENCE = 3;
+    public static final int SHAPE_ID = 0;
+    public static final int SHAPE_PT_LAT = 1;
+    public static final int SHAPE_PT_LON = 2;
+    public static final int SHAPE_PT_SEQUENCE = 3;
     // added manually to create a composite key between shapeId and ptSequence.
     @PrimaryKey
     @CsvIgnore

@@ -8,7 +8,7 @@ import java.util.Locale;
 /**
  * Created by matthew on 14/04/16.
  */
-class ModelUtils {
+public class ModelUtils {
     public static Date parseDate(String date) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd", Locale.CANADA);
         Date parsedDate = null;

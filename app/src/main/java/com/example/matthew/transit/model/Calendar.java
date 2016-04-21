@@ -15,16 +15,16 @@ import io.realm.annotations.Required;
  */
 public class Calendar extends RealmObject {
 
-    private static final int SERVICE_ID = 0;
-    private static final int MONDAY = 1;
-    private static final int TUESDAY = 2;
-    private static final int WEDNESDAY = 3;
-    private static final int THURSDAY = 4;
-    private static final int FRIDAY = 5;
-    private static final int SATURDAY = 6;
-    private static final int SUNDAY = 7;
-    private static final int START_DATE = 8;
-    private static final int END_DATE = 9;
+    public static final int SERVICE_ID = 0;
+    public static final int MONDAY = 1;
+    public static final int TUESDAY = 2;
+    public static final int WEDNESDAY = 3;
+    public static final int THURSDAY = 4;
+    public static final int FRIDAY = 5;
+    public static final int SATURDAY = 6;
+    public static final int SUNDAY = 7;
+    public static final int START_DATE = 8;
+    public static final int END_DATE = 9;
     @PrimaryKey
     @CsvCell(columnName = "service_id")
     private String serviceId;
@@ -52,8 +52,7 @@ public class Calendar extends RealmObject {
     private Date endDate;
 
     private RealmList<Trip> trips;
-    private RealmList<Route> routes;
-    private RealmList<Shape> shapes;
+    private RealmList<CalendarDate> calendarDates;
 
     public Calendar() {
     }
@@ -159,19 +158,11 @@ public class Calendar extends RealmObject {
         this.trips = trips;
     }
 
-    public RealmList<Route> getRoutes() {
-        return routes;
+    public RealmList<CalendarDate> getCalendarDates() {
+        return calendarDates;
     }
 
-    public void setRoutes(RealmList<Route> routes) {
-        this.routes = routes;
-    }
-
-    public RealmList<Shape> getShapes() {
-        return shapes;
-    }
-
-    public void setShapes(RealmList<Shape> shapes) {
-        this.shapes = shapes;
+    public void setCalendarDates(RealmList<CalendarDate> calendarDates) {
+        this.calendarDates = calendarDates;
     }
 }

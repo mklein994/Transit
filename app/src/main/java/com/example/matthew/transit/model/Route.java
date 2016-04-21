@@ -13,12 +13,13 @@ import io.realm.annotations.Required;
  * Created by matthew on 11/04/16.
  */
 public class Route extends RealmObject {
-    private static final int ROUTE_ID = 0;
-    private static final int ROUTE_SHORT_NAME = 1;
-    private static final int ROUTE_LONG_NAME = 2;
-    private static final int ROUTE_TYPE = 3;
-    private static final int ROUTE_COLOR = 4;
-    private static final int ROUTE_TEXT_COLOR = 5;
+    public static final int ROUTE_ID = 0;
+    public static final int ROUTE_SHORT_NAME = 1;
+    public static final int ROUTE_LONG_NAME = 2;
+    public static final int ROUTE_TYPE = 3;
+    public static final int ROUTE_URL = 4;
+    public static final int ROUTE_COLOR = 5;
+    public static final int ROUTE_TEXT_COLOR = 6;
     @PrimaryKey
     @CsvCell(columnName = "route_id")
     private String routeId;
@@ -63,6 +64,7 @@ public class Route extends RealmObject {
         this.routeId = fields[ROUTE_ID];
         this.routeShortName = fields[ROUTE_SHORT_NAME];
         this.routeLongName = fields[ROUTE_LONG_NAME];
+        this.routeUrl = fields[ROUTE_URL];
         this.routeType = ModelUtils.parseInt((fields[ROUTE_TYPE]));
         this.routeColor = fields[ROUTE_COLOR];
         this.routeTextColor = fields[ROUTE_TEXT_COLOR];
@@ -112,7 +114,7 @@ public class Route extends RealmObject {
         return routeType;
     }
 
-    public void setRouteType(byte routeType) {
+    public void setRouteType(Integer routeType) {
         this.routeType = routeType;
     }
 
