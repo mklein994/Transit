@@ -3,27 +3,19 @@ package com.example.matthew.transit;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.widget.Toast;
 
-import com.example.matthew.transit.model.Agency;
-import com.example.matthew.transit.model.Calendar;
-import com.example.matthew.transit.model.CalendarDate;
-import com.example.matthew.transit.model.FareAttribute;
-import com.example.matthew.transit.model.FareRule;
-import com.example.matthew.transit.model.Route;
-import com.example.matthew.transit.model.Shape;
-import com.example.matthew.transit.model.Stop;
-import com.example.matthew.transit.model.StopTime;
-import com.example.matthew.transit.model.Trip;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
@@ -43,6 +35,7 @@ import io.realm.Realm;
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getName();
     private static final String FILE_NAME = "gtfs.zip";
+    private static final String DATABASE_NAME = "transit.db";
     private static DownloadManager manager = null;
     private static long downloadReference;
     private final BroadcastReceiver onNotificationClick = new BroadcastReceiver() {
@@ -84,8 +77,324 @@ public class MainActivity extends Activity {
 
         //ArrayList<File> files = extractFiles(pfd);
         File[] files = extractFiles(pfd);
+
         processFiles(files);
         //new DatabaseImportTask().execute(files);
+    }
+
+    private void processFiles(File[] files) {
+
+        // delete the database; start over
+        deleteDatabase(DATABASE_NAME);
+
+        TransitDatabaseHelper mTransitDatabaseHelper = new TransitDatabaseHelper(getApplicationContext(), DATABASE_NAME);
+        SQLiteDatabase db = mTransitDatabaseHelper.getWritableDatabase();
+
+        ArrayList<String> fileNames = new ArrayList<>();
+        // FIXME: 16/04/16 CSVReader is final, so setting it won't change anything about it, including the number of lines read.
+        final ArrayList<CSVReader> readers = new ArrayList<>();
+
+        for (File file :
+                files) {
+            fileNames.add(file.getName());
+            readers.add(getCSVReader(file));
+        }
+
+        final int AGENCY_INDEX = (fileNames.indexOf("agency.txt"));
+        final int STOP_TIMES_INDEX = (fileNames.indexOf("stop_times.txt"));
+        final int TRIPS_INDEX = (fileNames.indexOf("trips.txt"));
+        final int FARE_RULES_INDEX = (fileNames.indexOf("fare_rules.txt"));
+        final int STOPS_INDEX = (fileNames.indexOf("stops.txt"));
+        final int SHAPES_INDEX = (fileNames.indexOf("shapes.txt"));
+        final int ROUTES_INDEX = (fileNames.indexOf("routes.txt"));
+        final int FARE_ATTRIBUTES_INDEX = (fileNames.indexOf("fare_attributes.txt"));
+        final int CALENDAR_DATES_INDEX = (fileNames.indexOf("calendar_dates.txt"));
+        final int CALENDARS_INDEX = (fileNames.indexOf("calendar.txt"));
+
+        db.beginTransaction();
+        try {
+
+            insertAgencies(db, readers.get(AGENCY_INDEX));
+
+            insertCalendars(db, readers.get(CALENDARS_INDEX));
+            insertCalendarDates(db, readers.get(CALENDAR_DATES_INDEX));
+            insertFareAttributes(db, readers.get(FARE_ATTRIBUTES_INDEX));
+            insertRoutes(db, readers.get(ROUTES_INDEX));
+            insertShapes(db, readers.get(SHAPES_INDEX));
+            insertStops(db, readers.get(STOPS_INDEX));
+
+            insertFareRules(db, readers.get(FARE_RULES_INDEX));
+            insertTrips(db, readers.get(TRIPS_INDEX));
+
+            insertStopTimes(db, readers.get(STOP_TIMES_INDEX));
+
+            db.setTransactionSuccessful();
+            Log.d(TAG, "processFiles: Import successful!");
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+    }
+
+    private void insertAgencies(SQLiteDatabase db, CSVReader reader) {
+        String[] nextLine;
+
+        long newRowId = 0;
+        try {
+            while ((nextLine = reader.readNext()) != null) {
+                ContentValues values = new ContentValues();
+                values.put(TransitContract.Agency.AGENCY_NAME, nextLine[TransitContract.Agency.AGENCY_NAME_INDEX]);
+                values.put(TransitContract.Agency.AGENCY_URL, nextLine[TransitContract.Agency.AGENCY_URL_INDEX]);
+                values.put(TransitContract.Agency.AGENCY_TIMEZONE, nextLine[TransitContract.Agency.AGENCY_TIMEZONE_INDEX]);
+                values.put(TransitContract.Agency.AGENCY_LANG, nextLine[TransitContract.Agency.AGENCY_LANG_INDEX]);
+                values.put(TransitContract.Agency.AGENCY_PHONE, nextLine[TransitContract.Agency.AGENCY_PHONE_INDEX]);
+
+                newRowId = db.insert(
+                        TransitDatabaseHelper.Tables.AGENCY,
+                        null,
+                        values);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, String.format("insertAgencies: Error happened inserting row with ID %d.", newRowId));
+            e.printStackTrace();
+        }
+        Log.d(TAG, "processFiles: Agencies imported.");
+    }
+
+    private void insertCalendars(SQLiteDatabase db, CSVReader reader) {
+        String[] nextLine;
+
+        long newRowId = 0;
+        try {
+            while ((nextLine = reader.readNext()) != null) {
+                ContentValues values = new ContentValues();
+                values.put(TransitContract.Calendar.SERVICE_ID, nextLine[TransitContract.Calendar.SERVICE_ID_INDEX]);
+                values.put(TransitContract.Calendar.MONDAY, nextLine[TransitContract.Calendar.MONDAY_INDEX]);
+                values.put(TransitContract.Calendar.TUESDAY, nextLine[TransitContract.Calendar.TUESDAY_INDEX]);
+                values.put(TransitContract.Calendar.WEDNESDAY, nextLine[TransitContract.Calendar.WEDNESDAY_INDEX]);
+                values.put(TransitContract.Calendar.THURSDAY, nextLine[TransitContract.Calendar.THURSDAY_INDEX]);
+                values.put(TransitContract.Calendar.FRIDAY, nextLine[TransitContract.Calendar.FRIDAY_INDEX]);
+                values.put(TransitContract.Calendar.SATURDAY, nextLine[TransitContract.Calendar.SATURDAY_INDEX]);
+                values.put(TransitContract.Calendar.SUNDAY, nextLine[TransitContract.Calendar.SUNDAY_INDEX]);
+                values.put(TransitContract.Calendar.START_DATE, nextLine[TransitContract.Calendar.START_DATE_INDEX]);
+                values.put(TransitContract.Calendar.END_DATE, nextLine[TransitContract.Calendar.END_DATE_INDEX]);
+
+                newRowId = db.insert(
+                        TransitDatabaseHelper.Tables.CALENDAR,
+                        null,
+                        values);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, String.format("insertCalendars: Error happened inserting row with ID %d.", newRowId));
+            e.printStackTrace();
+        }
+        Log.d(TAG, "processFiles: Calendars imported.");
+    }
+
+    private void insertCalendarDates(SQLiteDatabase db, CSVReader reader) {
+        String[] nextLine;
+
+        long newRowId = 0;
+        try {
+            while ((nextLine = reader.readNext()) != null) {
+                ContentValues values = new ContentValues();
+                values.put(TransitContract.CalendarDate.SERVICE_ID, nextLine[TransitContract.CalendarDate.SERVICE_ID_INDEX]);
+                values.put(TransitContract.CalendarDate.DATE, nextLine[TransitContract.CalendarDate.DATE_INDEX]);
+                values.put(TransitContract.CalendarDate.EXCEPTION_TYPE, nextLine[TransitContract.CalendarDate.EXCEPTION_TYPE_INDEX]);
+
+                newRowId = db.insert(
+                        TransitDatabaseHelper.Tables.CALENDAR_DATE,
+                        null,
+                        values);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, String.format("insertCalendarDates: Error happened inserting row with ID %d.", newRowId));
+            e.printStackTrace();
+        }
+        Log.d(TAG, "processFiles: CalendarDates imported.");
+    }
+
+    private void insertFareAttributes(SQLiteDatabase db, CSVReader reader) {
+        String[] nextLine;
+
+        long newRowId = 0;
+        try {
+            while ((nextLine = reader.readNext()) != null) {
+                ContentValues values = new ContentValues();
+                values.put(TransitContract.FareAttribute.FARE_ID, nextLine[TransitContract.FareAttribute.FARE_ID_INDEX]);
+                values.put(TransitContract.FareAttribute.PRICE, nextLine[TransitContract.FareAttribute.PRICE_INDEX]);
+                values.put(TransitContract.FareAttribute.CURRENCY_TYPE, nextLine[TransitContract.FareAttribute.CURRENCY_TYPE_INDEX]);
+                values.put(TransitContract.FareAttribute.PAYMENT_METHOD, nextLine[TransitContract.FareAttribute.PAYMENT_METHOD_INDEX]);
+                values.put(TransitContract.FareAttribute.TRANSFERS, nextLine[TransitContract.FareAttribute.TRANSFERS_INDEX]);
+                values.put(TransitContract.FareAttribute.TRANSFER_DURATION, nextLine[TransitContract.FareAttribute.TRANSFER_DURATION_INDEX]);
+
+                newRowId = db.insert(
+                        TransitDatabaseHelper.Tables.FARE_ATTRIBUTE,
+                        null,
+                        values);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, String.format("insertFareAttributes: Error happened inserting row with ID %d.", newRowId));
+            e.printStackTrace();
+        }
+        Log.d(TAG, "processFiles: FareAttributes imported.");
+    }
+
+    private void insertRoutes(SQLiteDatabase db, CSVReader reader) {
+        String[] nextLine;
+
+        long newRowId = 0;
+        try {
+            while ((nextLine = reader.readNext()) != null) {
+                ContentValues values = new ContentValues();
+
+                values.put(TransitContract.Route.ROUTE_ID, nextLine[TransitContract.Route.ROUTE_ID_INDEX]);
+                values.put(TransitContract.Route.ROUTE_SHORT_NAME, nextLine[TransitContract.Route.ROUTE_SHORT_NAME_INDEX]);
+                values.put(TransitContract.Route.ROUTE_LONG_NAME, nextLine[TransitContract.Route.ROUTE_LONG_NAME_INDEX]);
+                values.put(TransitContract.Route.ROUTE_TYPE, nextLine[TransitContract.Route.ROUTE_TYPE_INDEX]);
+                values.put(TransitContract.Route.ROUTE_COLOR, nextLine[TransitContract.Route.ROUTE_COLOR_INDEX]);
+                values.put(TransitContract.Route.ROUTE_TEXT_COLOR, nextLine[TransitContract.Route.ROUTE_TEXT_COLOR_INDEX]);
+
+                newRowId = db.insert(
+                        TransitDatabaseHelper.Tables.ROUTE,
+                        null,
+                        values);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, String.format("insertRoutes: Error happened inserting row with ID %d.", newRowId));
+            e.printStackTrace();
+        }
+        Log.d(TAG, "processFiles: Routes imported.");
+    }
+
+    private void insertShapes(SQLiteDatabase db, CSVReader reader) {
+        String[] nextLine;
+
+        long newRowId = 0;
+        try {
+            while ((nextLine = reader.readNext()) != null) {
+                ContentValues values = new ContentValues();
+
+                values.put(TransitContract.Shape.SHAPE_ID, nextLine[TransitContract.Shape.SHAPE_ID_INDEX]);
+                values.put(TransitContract.Shape.SHAPE_PT_LAT, nextLine[TransitContract.Shape.SHAPE_PT_LAT_INDEX]);
+                values.put(TransitContract.Shape.SHAPE_PT_LON, nextLine[TransitContract.Shape.SHAPE_PT_LON_INDEX]);
+                values.put(TransitContract.Shape.SHAPE_PT_SEQUENCE, nextLine[TransitContract.Shape.SHAPE_PT_SEQUENCE_INDEX]);
+
+                newRowId = db.insert(
+                        TransitDatabaseHelper.Tables.SHAPE,
+                        null,
+                        values);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, String.format("insertShapes: Error happened inserting row with ID %d.", newRowId));
+            e.printStackTrace();
+        }
+        Log.d(TAG, "processFiles: Shapes imported.");
+    }
+
+    private void insertStops(SQLiteDatabase db, CSVReader reader) {
+        String[] nextLine;
+
+        long newRowId = 0;
+        try {
+            while ((nextLine = reader.readNext()) != null) {
+                ContentValues values = new ContentValues();
+
+                values.put(TransitContract.Stop.STOP_ID, nextLine[TransitContract.Stop.STOP_ID_INDEX]);
+                values.put(TransitContract.Stop.STOP_CODE, nextLine[TransitContract.Stop.STOP_CODE_INDEX]);
+                values.put(TransitContract.Stop.STOP_NAME, nextLine[TransitContract.Stop.STOP_NAME_INDEX]);
+                values.put(TransitContract.Stop.STOP_LAT, nextLine[TransitContract.Stop.STOP_LAT_INDEX]);
+                values.put(TransitContract.Stop.STOP_LON, nextLine[TransitContract.Stop.STOP_LON_INDEX]);
+                values.put(TransitContract.Stop.STOP_URL, nextLine[TransitContract.Stop.STOP_URL_INDEX]);
+
+                newRowId = db.insert(
+                        TransitDatabaseHelper.Tables.STOP,
+                        null,
+                        values);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, String.format("insertStops: Error happened inserting row with ID %d.", newRowId));
+            e.printStackTrace();
+        }
+        Log.d(TAG, "processFiles: Stops imported.");
+    }
+
+    private void insertFareRules(SQLiteDatabase db, CSVReader reader) {
+        String[] nextLine;
+
+        long newRowId = 0;
+        try {
+            while ((nextLine = reader.readNext()) != null) {
+                ContentValues values = new ContentValues();
+
+                values.put(TransitContract.FareRule.FARE_ID, nextLine[TransitContract.FareRule.FARE_ID_INDEX]);
+                values.put(TransitContract.FareRule.ROUTE_ID, nextLine[TransitContract.FareRule.ROUTE_ID_INDEX]);
+
+                newRowId = db.insert(
+                        TransitDatabaseHelper.Tables.FARE_RULE,
+                        null,
+                        values);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, String.format("insertFareRules: Error happened inserting row with ID %d.", newRowId));
+            e.printStackTrace();
+        }
+        Log.d(TAG, "processFiles: FareRules imported.");
+    }
+
+    private void insertTrips(SQLiteDatabase db, CSVReader reader) {
+        String[] nextLine;
+
+        long newRowId = 0;
+        try {
+            while ((nextLine = reader.readNext()) != null) {
+                ContentValues values = new ContentValues();
+
+                values.put(TransitContract.Trip.ROUTE_ID, nextLine[TransitContract.Trip.ROUTE_ID_INDEX]);
+                values.put(TransitContract.Trip.SERVICE_ID, nextLine[TransitContract.Trip.SERVICE_ID_INDEX]);
+                values.put(TransitContract.Trip.TRIP_ID, nextLine[TransitContract.Trip.TRIP_ID_INDEX]);
+                values.put(TransitContract.Trip.TRIP_HEADSIGN, nextLine[TransitContract.Trip.TRIP_HEADSIGN_INDEX]);
+                values.put(TransitContract.Trip.DIRECTION_ID, nextLine[TransitContract.Trip.DIRECTION_ID_INDEX]);
+                values.put(TransitContract.Trip.BLOCK_ID, nextLine[TransitContract.Trip.BLOCK_ID_INDEX]);
+                values.put(TransitContract.Trip.SHAPE_ID, nextLine[TransitContract.Trip.SHAPE_ID_INDEX]);
+                values.put(TransitContract.Trip.WHEELCHAIR_ACCESSIBLE, nextLine[TransitContract.Trip.WHEELCHAIR_ACCESSIBLE_INDEX]);
+
+                newRowId = db.insert(
+                        TransitDatabaseHelper.Tables.TRIP,
+                        null,
+                        values);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, String.format("insertTrips: Error happened inserting row with ID %d.", newRowId));
+            e.printStackTrace();
+        }
+        Log.d(TAG, "processFiles: Trips imported.");
+    }
+
+    private void insertStopTimes(SQLiteDatabase db, CSVReader reader) {
+        String[] nextLine;
+
+        long newRowId = 0;
+        try {
+            while ((nextLine = reader.readNext()) != null) {
+                ContentValues values = new ContentValues();
+
+                values.put(TransitContract.StopTime.TRIP_ID, nextLine[TransitContract.StopTime.TRIP_ID_INDEX]);
+                values.put(TransitContract.StopTime.ARRIVAL_TIME, nextLine[TransitContract.StopTime.ARRIVAL_TIME_INDEX]);
+                values.put(TransitContract.StopTime.DEPARTURE_TIME, nextLine[TransitContract.StopTime.DEPARTURE_TIME_INDEX]);
+                values.put(TransitContract.StopTime.STOP_ID, nextLine[TransitContract.StopTime.STOP_ID_INDEX]);
+                values.put(TransitContract.StopTime.STOP_SEQUENCE, nextLine[TransitContract.StopTime.STOP_SEQUENCE_INDEX]);
+
+                newRowId = db.insert(
+                        TransitDatabaseHelper.Tables.STOP_TIME,
+                        null,
+                        values);
+            }
+        } catch (IOException e) {
+            Log.e(TAG, String.format("insertStopTimes: Error happened inserting row with ID %d.", newRowId));
+            e.printStackTrace();
+        }
+        Log.d(TAG, "processFiles: StopTimes imported.");
     }
 
     @Override
@@ -188,9 +497,6 @@ public class MainActivity extends Activity {
 
         unregisterReceiver(onComplete);
         unregisterReceiver(onNotificationClick);
-        if (!realm.isClosed()) {
-            realm.close();
-        }
     }
 
     private File[] extractFiles(ParcelFileDescriptor pfd) {
@@ -231,94 +537,4 @@ public class MainActivity extends Activity {
         fileList = files.toArray(fileList);
         return fileList;
     }
-
-    private void processFiles(File[] files) {
-        try (Realm realm = Realm.getDefaultInstance()) {
-
-            ArrayList<String> fileNames = new ArrayList<>();
-            // FIXME: 16/04/16 CSVReader is final, so setting it won't change anything about it, including the number of lines read.
-            final ArrayList<CSVReader> readers = new ArrayList<>();
-
-            for (File file :
-                    files) {
-                fileNames.add(file.getName());
-                readers.add(getCSVReader(file));
-            }
-
-            final int AGENCY_INDEX = (fileNames.indexOf("agency.txt"));
-            final int STOP_TIMES_INDEX = (fileNames.indexOf("stop_times.txt"));
-            final int TRIPS_INDEX = (fileNames.indexOf("trips.txt"));
-            final int FARE_RULES_INDEX = (fileNames.indexOf("fare_rules.txt"));
-            final int STOPS_INDEX = (fileNames.indexOf("stops.txt"));
-            final int SHAPES_INDEX = (fileNames.indexOf("shapes.txt"));
-            final int ROUTES_INDEX = (fileNames.indexOf("routes.txt"));
-            final int FARE_ATTRIBUTES_INDEX = (fileNames.indexOf("fare_attributes.txt"));
-            final int CALENDAR_DATES_INDEX = (fileNames.indexOf("calendar_dates.txt"));
-            final int CALENDARS_INDEX = (fileNames.indexOf("calendar.txt"));
-
-            realm.executeTransactionAsync(new Realm.Transaction() {
-                @Override
-                public void execute(Realm bgRealm) {
-                    try {
-                        ModelManager.importAgencies(bgRealm, readers.get(AGENCY_INDEX));
-                        Log.d(TAG, String.format("processFiles: Agencies imported: %d", bgRealm.where(Agency.class).findAll().size()));
-
-                        ModelManager.importCalendars(bgRealm, readers.get(CALENDARS_INDEX));
-                        Log.d(TAG, String.format("processFiles: calendars imported: %d", bgRealm.where(Calendar.class).findAll().size()));
-                        ModelManager.importCalendarDates(bgRealm, readers.get(CALENDAR_DATES_INDEX));
-                        Log.d(TAG, String.format("processFiles: calendar dates imported: %d", bgRealm.where(CalendarDate.class).findAll().size()));
-                        ModelManager.importFareAttributes(bgRealm, readers.get(FARE_ATTRIBUTES_INDEX));
-                        Log.d(TAG, String.format("processFiles: fare attributes imported: %d", bgRealm.where(FareAttribute.class).findAll().size()));
-                        ModelManager.importRoutes(bgRealm, readers.get(ROUTES_INDEX));
-                        Log.d(TAG, String.format("processFiles: routes imported: %d", bgRealm.where(Route.class).findAll().size()));
-                        ModelManager.importShapes(bgRealm, readers.get(SHAPES_INDEX));
-                        Log.d(TAG, String.format("processFiles: shapes imported: %d", bgRealm.where(Shape.class).findAll().size()));
-                        ModelManager.importStops(bgRealm, readers.get(STOPS_INDEX));
-                        Log.d(TAG, String.format("processFiles: stops imported: %d", bgRealm.where(Stop.class).findAll().size()));
-
-                        ModelManager.importFareRules(bgRealm, readers.get(FARE_RULES_INDEX));
-                        Log.d(TAG, String.format("processFiles: fare rules imported: %d", bgRealm.where(FareRule.class).findAll().size()));
-                        ModelManager.importTrips(bgRealm, readers.get(TRIPS_INDEX));
-                        Log.d(TAG, String.format("processFiles: trips imported: %d", bgRealm.where(Trip.class).findAll().size()));
-
-                        ModelManager.importStopTimes(bgRealm, readers.get(STOP_TIMES_INDEX));
-                        Log.d(TAG, String.format("processFiles: stop times imported: %d", bgRealm.where(StopTime.class).findAll().size()));
-                    } catch (IOException e) {
-                        Log.d(TAG, "execute: Import failed, there was an exception from parsing the csv files.");
-                        e.printStackTrace();
-                    }
-                }
-            }, new Realm.Transaction.OnSuccess() {
-                @Override
-                public void onSuccess() {
-                    Log.d(TAG, "onSuccess: test query: find fare attributes where route is 44: " +
-                            realm.where(FareAttribute.class).equalTo("routes.routeId", "44").findFirst());
-
-                }
-            }, new Realm.Transaction.OnError() {
-                @Override
-                public void onError(Throwable error) {
-                    Log.d(TAG, "onError: Error occurred while importing!");
-                    error.printStackTrace();
-                }
-            });
-        }
-    }
-
-    /*
-    class DatabaseImportTask extends AsyncTask<File, Void, Void> {
-
-        @Override
-        protected Void doInBackground(File... files) {
-            processFiles(files);
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            Log.d(TAG, "onPostExecute: Import Successful!");
-        }
-    }
-    */
 }

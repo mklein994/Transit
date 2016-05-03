@@ -1,6 +1,7 @@
 package com.example.matthew.transit;
 
 import android.content.Context;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
@@ -18,9 +19,7 @@ import com.example.matthew.transit.TransitContract.Trip;
 /**
  * Created by matthew on 29/04/16.
  */
-public class TransitDatabase extends SQLiteOpenHelper {
-
-    private static final String DATABASE_NAME = "transit.db";
+public class TransitDatabaseHelper extends SQLiteOpenHelper {
 
     private static final int CUR_DATABASE_VERSION = 1;
 
@@ -71,6 +70,9 @@ public class TransitDatabase extends SQLiteOpenHelper {
             Agency.AGENCY_PHONE + TEXT_TYPE +
             " )";
 
+    private static final String SQL_DELETE_AGENCIES =
+            "DROP TABLE IF EXISTS " + Tables.AGENCY;
+
     private static final String SQL_CREATE_CALENDARS = CREATE_TABLE + Tables.CALENDAR + " (" +
             Calendar._ID + PRIMARY_KEY +
             Calendar.SERVICE_ID + TEXT_TYPE + COMMA_SEP +
@@ -85,12 +87,18 @@ public class TransitDatabase extends SQLiteOpenHelper {
             Calendar.END_DATE + NUMERIC_TYPE +
             " )";
 
+    private static final String SQL_DELETE_CALENDARS =
+            "DROP TABLE IF EXISTS " + Tables.CALENDAR;
+
     private static final String SQL_CREATE_CALENDAR_DATES = CREATE_TABLE + Tables.CALENDAR_DATE + " (" +
             CalendarDate._ID + PRIMARY_KEY +
             CalendarDate.SERVICE_ID + TEXT_TYPE + COMMA_SEP +
             CalendarDate.DATE + NUMERIC_TYPE + COMMA_SEP +
             CalendarDate.EXCEPTION_TYPE + INTEGER_TYPE +
             " )";
+
+    private static final String SQL_DELETE_CALENDAR_DATES =
+            "DROP TABLE IF EXISTS " + Tables.CALENDAR_DATE;
 
     private static final String SQL_CREATE_FARE_ATTRIBUTES = CREATE_TABLE + Tables.FARE_ATTRIBUTE + " (" +
             FareAttribute._ID + PRIMARY_KEY +
@@ -102,11 +110,17 @@ public class TransitDatabase extends SQLiteOpenHelper {
             FareAttribute.TRANSFER_DURATION + INTEGER_TYPE +
             " )";
 
+    private static final String SQL_DELETE_FARE_ATTRIBUTES =
+            "DROP TABLE IF EXISTS " + Tables.FARE_ATTRIBUTE;
+
     private static final String SQL_CREATE_FARE_RULES = CREATE_TABLE + Tables.FARE_RULE + " (" +
             FareRule._ID + PRIMARY_KEY +
             FareRule.FARE_ID + TEXT_TYPE + References.FARE_ID + COMMA_SEP +
             FareRule.ROUTE_ID + TEXT_TYPE + References.ROUTE_ID +
             " )";
+
+    private static final String SQL_DELETE_FARE_RULES =
+            "DROP TABLE IF EXISTS " + Tables.FARE_RULE;
 
     private static final String SQL_CREATE_ROUTES = CREATE_TABLE + Tables.ROUTE + " (" +
             Route._ID + PRIMARY_KEY +
@@ -118,6 +132,9 @@ public class TransitDatabase extends SQLiteOpenHelper {
             Route.ROUTE_TEXT_COLOR + TEXT_TYPE +
             " )";
 
+    private static final String SQL_DELETE_ROUTES =
+            "DROP TABLE IF EXISTS " + Tables.ROUTE;
+
     private static final String SQL_CREATE_SHAPES = CREATE_TABLE + Tables.SHAPE + " (" +
             Shape._ID + PRIMARY_KEY +
             Shape.SHAPE_ID + TEXT_TYPE + COMMA_SEP +
@@ -125,6 +142,9 @@ public class TransitDatabase extends SQLiteOpenHelper {
             Shape.SHAPE_PT_LON + REAL_TYPE + COMMA_SEP +
             Shape.SHAPE_PT_SEQUENCE + INTEGER_TYPE +
             " )";
+
+    private static final String SQL_DELETE_SHAPES =
+            "DROP TABLE IF EXISTS " + Tables.SHAPE;
 
     private static final String SQL_CREATE_STOPS = CREATE_TABLE + Tables.STOP + " (" +
             Stop._ID + PRIMARY_KEY +
@@ -136,6 +156,9 @@ public class TransitDatabase extends SQLiteOpenHelper {
             Stop.STOP_URL + TEXT_TYPE +
             " )";
 
+    private static final String SQL_DELETE_STOPS =
+            "DROP TABLE IF EXISTS " + Tables.STOP;
+
     private static final String SQL_CREATE_STOP_TIMES = CREATE_TABLE + Tables.STOP_TIME + " (" +
             StopTime._ID + PRIMARY_KEY +
             StopTime.TRIP_ID + TEXT_TYPE + References.TRIP_ID + COMMA_SEP +
@@ -144,6 +167,9 @@ public class TransitDatabase extends SQLiteOpenHelper {
             StopTime.STOP_ID + TEXT_TYPE + References.STOP_ID + COMMA_SEP +
             StopTime.STOP_SEQUENCE + INTEGER_TYPE +
             " )";
+
+    private static final String SQL_DELETE_STOP_TIMES =
+            "DROP TABLE IF EXISTS " + Tables.STOP_TIME;
 
     private static final String SQL_CREATE_TRIPS = CREATE_TABLE + Tables.TRIP + " (" +
             Trip._ID + PRIMARY_KEY +
@@ -157,17 +183,72 @@ public class TransitDatabase extends SQLiteOpenHelper {
             Trip.WHEELCHAIR_ACCESSIBLE + INTEGER_TYPE +
             " )";
 
-    public TransitDatabase(Context context) {
-        super(context, DATABASE_NAME, null, CUR_DATABASE_VERSION);
+    private static final String SQL_DELETE_TRIPS =
+            "DROP TABLE IF EXISTS " + Tables.TRIP;
+
+    public TransitDatabaseHelper(Context context, String databaseName) {
+        super(context, databaseName, null, CUR_DATABASE_VERSION);
         mContext = context;
     }
 
     @Override
     public void onCreate(SQLiteDatabase db) {
+        /*
+        Agencies
+
+        Calendars
+        CalendarDates
+        FareAttributes
+        Routes
+        Shapes
+        Stops
+
+        FareRules
+        Trips
+
+        StopTimes
+         */
+
+        try {
+            db.execSQL(SQL_CREATE_AGENCIES);
+
+            db.execSQL(SQL_CREATE_CALENDARS);
+            db.execSQL(SQL_CREATE_CALENDAR_DATES);
+            db.execSQL(SQL_CREATE_FARE_ATTRIBUTES);
+            db.execSQL(SQL_CREATE_ROUTES);
+            db.execSQL(SQL_CREATE_SHAPES);
+            db.execSQL(SQL_CREATE_STOPS);
+
+            db.execSQL(SQL_CREATE_FARE_RULES);
+            db.execSQL(SQL_CREATE_TRIPS);
+
+            db.execSQL(SQL_CREATE_STOP_TIMES);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        try {
+            db.execSQL(SQL_DELETE_STOP_TIMES);
 
+            db.execSQL(SQL_DELETE_TRIPS);
+            db.execSQL(SQL_DELETE_FARE_RULES);
+
+            db.execSQL(SQL_DELETE_STOPS);
+            db.execSQL(SQL_DELETE_SHAPES);
+            db.execSQL(SQL_DELETE_ROUTES);
+            db.execSQL(SQL_DELETE_FARE_ATTRIBUTES);
+            db.execSQL(SQL_DELETE_CALENDAR_DATES);
+            db.execSQL(SQL_DELETE_CALENDARS);
+
+            db.execSQL(SQL_DELETE_AGENCIES);
+
+            // start over
+            onCreate(db);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }
