@@ -1,8 +1,5 @@
 package com.example.matthew.transit.model;
 
-import org.csveed.annotations.CsvCell;
-import org.csveed.annotations.CsvIgnore;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -23,31 +20,19 @@ public class Trip extends RealmObject {
     private static final int SHAPE_ID = 6;
     private static final int WHEELCHAIR_ACCESSIBLE = 7;
     @Required
-    @CsvCell(columnName = "route_id")
     private String routeId;
     @Required
-    @CsvCell(columnName = "service_id")
     private String serviceId;
     @PrimaryKey
-    @CsvCell(columnName = "trip_id")
     private String tripId;
-    @CsvCell(columnName = "trip_headsign")
     private String tripHeadsign;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "trip_short_name")
     private String tripShortName;
-    @CsvCell(columnName = "direction_id")
     private Boolean directionId;
-    @CsvCell(columnName = "block_id")
     private String blockId;
-    @CsvCell(columnName = "shape_id")
     private String shapeId;
-    @CsvCell(columnName = "wheelchair_accessible")
     private Integer wheelchairAccessible;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "bikes_allowed")
     private Byte bikesAllowed;
 
     private RealmList<StopTime> stopTimes;

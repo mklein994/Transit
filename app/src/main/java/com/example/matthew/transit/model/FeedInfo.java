@@ -1,8 +1,5 @@
 package com.example.matthew.transit.model;
 
-import org.csveed.annotations.CsvCell;
-import org.csveed.annotations.CsvDate;
-
 import java.util.Date;
 
 import io.realm.annotations.Required;
@@ -12,26 +9,18 @@ import io.realm.annotations.Required;
  */
 public class FeedInfo {
     @Required
-    @CsvCell(columnName = "feed_publisher_name")
     private String feedPublisherName;
 
     @Required
-    @CsvCell(columnName = "feed_publisher_url")
     private String feedPublisherUrl;
 
     @Required
-    @CsvCell(columnName = "feed_lang")
     private String feedLang;
 
-    @CsvCell(columnName = "feed_start_date")
-    @CsvDate(format = "yyyyMMdd")
     private Date feedStartDate;
 
-    @CsvCell(columnName = "feed_end_date")
-    @CsvDate(format = "yyyyMMdd")
     private Date feedEndDate;
 
-    @CsvCell(columnName = "feed_version")
     private String feedVersion;
 
     public String getFeedPublisherName() {

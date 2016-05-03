@@ -1,9 +1,5 @@
 package com.example.matthew.transit.model;
 
-import org.csveed.annotations.CsvCell;
-import org.csveed.annotations.CsvDate;
-import org.csveed.annotations.CsvIgnore;
-
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -21,43 +17,26 @@ public class StopTime extends RealmObject {
 
     // added as a composite key between tripId and stopSequence
     @PrimaryKey
-    @CsvIgnore
     private String stopTimePK;
     @Required
-    @CsvCell(columnName = "trip_id")
     private String tripId;
     @Required
-    @CsvCell(columnName = "arrival_time")
-    @CsvDate(format = "HH:mm:ss")
     private String arrivalTime;
     @Required
-    @CsvCell(columnName = "departure_time")
-    @CsvDate(format = "HH:mm:ss")
     private String departureTime;
     @Required
-    @CsvCell(columnName = "stop_id")
     private String stopId;
     // required
-    @CsvCell(columnName = "stop_sequence")
     private int stopSequence;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "stop_headsign")
     private String stopHeadsign;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "pickup_type")
     private Byte pickupType;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "drop_off_type")
     private Byte dropOffType;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "shape_dist_traveled")
     private Double shapeDistTraveled;
     @Ignore
-    @CsvIgnore
     private Byte timepoint;
 
     public StopTime() {

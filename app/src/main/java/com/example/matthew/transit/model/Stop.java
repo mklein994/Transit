@@ -1,8 +1,5 @@
 package com.example.matthew.transit.model;
 
-import org.csveed.annotations.CsvCell;
-import org.csveed.annotations.CsvIgnore;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
@@ -20,44 +17,26 @@ public class Stop extends RealmObject {
     private static final int STOP_LON = 4;
     private static final int STOP_URL = 5;
     @PrimaryKey
-    @CsvCell(columnName = "stop_id")
     private String stopId;
-    @CsvCell(columnName = "stop_code")
     private String stopCode;
     @Required
-    @CsvCell(columnName = "stop_name")
     private String stopName;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "stop_desc")
     private String stopDesc;
     // required
-    @CsvCell(columnName = "stop_lat")
     private double stopLat;
     // required
-    @CsvCell(columnName = "stop_lon")
     private double stopLon;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "zone_id")
     private String zoneId;
-    @CsvCell(columnName = "stop_url")
     private String stopUrl;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "location_type")
     private byte locationType;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "parent_station")
     private String parentStation;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "stop_timezone")
     private String stopTimezone;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "wheelchair_boarding")
     private byte wheelchairBoarding;
 
     private RealmList<StopTime> stopTimes;

@@ -1,8 +1,5 @@
 package com.example.matthew.transit.model;
 
-import org.csveed.annotations.CsvCell;
-import org.csveed.annotations.CsvIgnore;
-
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
@@ -16,24 +13,15 @@ public class FareRule extends RealmObject {
     private static final int ROUTE_ID = 1;
     // added to create a composite key from fareId and routeId
     @PrimaryKey
-    @CsvIgnore
     private String fareRoutePK;
     @Required
-    @CsvCell(columnName = "fare_id")
     private String fareId;
-    @CsvCell(columnName = "route_id")
     private String routeId;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "origin_id")
     private String originId;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "destination_id")
     private String destinationId;
     @Ignore
-    @CsvIgnore
-    @CsvCell(columnName = "contains_id")
     private String containsId;
 
     public FareRule() {

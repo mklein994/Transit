@@ -1,7 +1,5 @@
 package com.example.matthew.transit.model;
 
-import org.csveed.annotations.CsvCell;
-
 import io.realm.RealmObject;
 import io.realm.annotations.Required;
 
@@ -10,15 +8,11 @@ import io.realm.annotations.Required;
  */
 public class Transfer extends RealmObject {
     @Required
-    @CsvCell(columnName = "from_stop_id")
     private String fromStopId;
     @Required
-    @CsvCell(columnName = "to_stop_id")
     private String toStopId;
     // required
-    @CsvCell(columnName = "transfer_type")
     private byte transferType;
-    @CsvCell(columnName = "min_transfer_time")
     private Integer minTransferTime;
 
     public Transfer() {

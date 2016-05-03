@@ -1,9 +1,5 @@
 package com.example.matthew.transit.model;
 
-import org.csveed.annotations.CsvCell;
-import org.csveed.annotations.CsvDate;
-import org.csveed.annotations.CsvIgnore;
-
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
@@ -23,18 +19,13 @@ public class CalendarDate extends RealmObject {
     private static final int EXCEPTION_TYPE = 2;
 
     // added manually as a foreign key between serviceId and date
-    @CsvIgnore
     @PrimaryKey
     private String calendarPK;
     @Required
-    @CsvCell(columnName = "service_id")
     private String serviceId;
     @Required
-    @CsvCell(columnName = "date")
-    @CsvDate(format = "yyyyMMdd")
     private Date date;
     // required
-    @CsvCell(columnName = "exception_type")
     private int exceptionType;
 
     private RealmList<Trip> trips;
