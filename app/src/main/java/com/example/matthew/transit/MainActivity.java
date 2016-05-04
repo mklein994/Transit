@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
@@ -38,6 +39,7 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
@@ -61,10 +63,22 @@ public class MainActivity extends Activity {
     };
     private SharedPreferences settings;
 
+    private void insertValues(SQLiteDatabase db, String tableName, ContentValues values, String[] nextLine) {
+        try {
+            db.insertOrThrow(tableName, null, values);
+        } catch (SQLException e) {
+            Log.e(TAG,
+                    String.format("insertValues: insert into %s failed: %s",
+                            tableName,
+                            Arrays.toString(nextLine)),
+                    e);
+            e.printStackTrace();
+        }
+    }
+
     private void insertAgencies(SQLiteDatabase db, CSVReader reader) {
         String[] nextLine;
 
-        long newRowId = 0;
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
@@ -74,13 +88,10 @@ public class MainActivity extends Activity {
                 values.put(Agency.AGENCY_LANG, nextLine[Agency.AGENCY_LANG_INDEX]);
                 values.put(Agency.AGENCY_PHONE, nextLine[Agency.AGENCY_PHONE_INDEX]);
 
-                newRowId = db.insert(
-                        Tables.AGENCY,
-                        null,
-                        values);
+                insertValues(db, Tables.AGENCY, values, nextLine);
             }
         } catch (IOException e) {
-            Log.e(TAG, String.format("insertAgencies: Error happened inserting row with ID %d.", newRowId));
+            Log.e(TAG, "insertAgencies: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
         Log.d(TAG, "processFiles: Agencies imported.");
@@ -89,7 +100,6 @@ public class MainActivity extends Activity {
     private void insertCalendars(SQLiteDatabase db, CSVReader reader) {
         String[] nextLine;
 
-        long newRowId = 0;
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
@@ -104,13 +114,10 @@ public class MainActivity extends Activity {
                 values.put(Calendar.START_DATE, nextLine[Calendar.START_DATE_INDEX]);
                 values.put(Calendar.END_DATE, nextLine[Calendar.END_DATE_INDEX]);
 
-                newRowId = db.insert(
-                        Tables.CALENDAR,
-                        null,
-                        values);
+                insertValues(db, Tables.CALENDAR, values, nextLine);
             }
         } catch (IOException e) {
-            Log.e(TAG, String.format("insertCalendars: Error happened inserting row with ID %d.", newRowId));
+            Log.e(TAG, "insertCalendars: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
         Log.d(TAG, "processFiles: Calendars imported.");
@@ -119,7 +126,6 @@ public class MainActivity extends Activity {
     private void insertCalendarDates(SQLiteDatabase db, CSVReader reader) {
         String[] nextLine;
 
-        long newRowId = 0;
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
@@ -127,13 +133,10 @@ public class MainActivity extends Activity {
                 values.put(CalendarDate.DATE, nextLine[CalendarDate.DATE_INDEX]);
                 values.put(CalendarDate.EXCEPTION_TYPE, nextLine[CalendarDate.EXCEPTION_TYPE_INDEX]);
 
-                newRowId = db.insert(
-                        Tables.CALENDAR_DATE,
-                        null,
-                        values);
+                insertValues(db, Tables.CALENDAR_DATE, values, nextLine);
             }
         } catch (IOException e) {
-            Log.e(TAG, String.format("insertCalendarDates: Error happened inserting row with ID %d.", newRowId));
+            Log.e(TAG, "insertCalendarDates: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
         Log.d(TAG, "processFiles: CalendarDates imported.");
@@ -142,7 +145,6 @@ public class MainActivity extends Activity {
     private void insertFareAttributes(SQLiteDatabase db, CSVReader reader) {
         String[] nextLine;
 
-        long newRowId = 0;
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
@@ -153,13 +155,10 @@ public class MainActivity extends Activity {
                 values.put(FareAttribute.TRANSFERS, nextLine[FareAttribute.TRANSFERS_INDEX]);
                 values.put(FareAttribute.TRANSFER_DURATION, nextLine[FareAttribute.TRANSFER_DURATION_INDEX]);
 
-                newRowId = db.insert(
-                        Tables.FARE_ATTRIBUTE,
-                        null,
-                        values);
+                insertValues(db, Tables.FARE_ATTRIBUTE, values, nextLine);
             }
         } catch (IOException e) {
-            Log.e(TAG, String.format("insertFareAttributes: Error happened inserting row with ID %d.", newRowId));
+            Log.e(TAG, "insertFareAttributes: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
         Log.d(TAG, "processFiles: FareAttributes imported.");
@@ -168,7 +167,6 @@ public class MainActivity extends Activity {
     private void insertRoutes(SQLiteDatabase db, CSVReader reader) {
         String[] nextLine;
 
-        long newRowId = 0;
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
@@ -180,13 +178,10 @@ public class MainActivity extends Activity {
                 values.put(Route.ROUTE_COLOR, nextLine[Route.ROUTE_COLOR_INDEX]);
                 values.put(Route.ROUTE_TEXT_COLOR, nextLine[Route.ROUTE_TEXT_COLOR_INDEX]);
 
-                newRowId = db.insert(
-                        Tables.ROUTE,
-                        null,
-                        values);
+                insertValues(db, Tables.ROUTE, values, nextLine);
             }
         } catch (IOException e) {
-            Log.e(TAG, String.format("insertRoutes: Error happened inserting row with ID %d.", newRowId));
+            Log.e(TAG, "insertRoutes: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
         Log.d(TAG, "processFiles: Routes imported.");
@@ -195,7 +190,6 @@ public class MainActivity extends Activity {
     private void insertShapes(SQLiteDatabase db, CSVReader reader) {
         String[] nextLine;
 
-        long newRowId = 0;
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
@@ -205,13 +199,10 @@ public class MainActivity extends Activity {
                 values.put(Shape.SHAPE_PT_LON, nextLine[Shape.SHAPE_PT_LON_INDEX]);
                 values.put(Shape.SHAPE_PT_SEQUENCE, nextLine[Shape.SHAPE_PT_SEQUENCE_INDEX]);
 
-                newRowId = db.insert(
-                        Tables.SHAPE,
-                        null,
-                        values);
+                insertValues(db, Tables.SHAPE, values, nextLine);
             }
         } catch (IOException e) {
-            Log.e(TAG, String.format("insertShapes: Error happened inserting row with ID %d.", newRowId));
+            Log.e(TAG, "insertShapes: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
         Log.d(TAG, "processFiles: Shapes imported.");
@@ -220,7 +211,6 @@ public class MainActivity extends Activity {
     private void insertStops(SQLiteDatabase db, CSVReader reader) {
         String[] nextLine;
 
-        long newRowId = 0;
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
@@ -232,13 +222,10 @@ public class MainActivity extends Activity {
                 values.put(Stop.STOP_LON, nextLine[Stop.STOP_LON_INDEX]);
                 values.put(Stop.STOP_URL, nextLine[Stop.STOP_URL_INDEX]);
 
-                newRowId = db.insert(
-                        Tables.STOP,
-                        null,
-                        values);
+                insertValues(db, Tables.STOP, values, nextLine);
             }
         } catch (IOException e) {
-            Log.e(TAG, String.format("insertStops: Error happened inserting row with ID %d.", newRowId));
+            Log.e(TAG, "insertStops: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
         Log.d(TAG, "processFiles: Stops imported.");
@@ -247,7 +234,6 @@ public class MainActivity extends Activity {
     private void insertFareRules(SQLiteDatabase db, CSVReader reader) {
         String[] nextLine;
 
-        long newRowId = 0;
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
@@ -255,13 +241,10 @@ public class MainActivity extends Activity {
                 values.put(FareRule.FARE_ID, nextLine[FareRule.FARE_ID_INDEX]);
                 values.put(FareRule.ROUTE_ID, nextLine[FareRule.ROUTE_ID_INDEX]);
 
-                newRowId = db.insert(
-                        Tables.FARE_RULE,
-                        null,
-                        values);
+                insertValues(db, Tables.FARE_RULE, values, nextLine);
             }
         } catch (IOException e) {
-            Log.e(TAG, String.format("insertFareRules: Error happened inserting row with ID %d.", newRowId));
+            Log.e(TAG, "insertFareRules: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
         Log.d(TAG, "processFiles: FareRules imported.");
@@ -270,7 +253,6 @@ public class MainActivity extends Activity {
     private void insertTrips(SQLiteDatabase db, CSVReader reader) {
         String[] nextLine;
 
-        long newRowId = 0;
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
@@ -284,13 +266,10 @@ public class MainActivity extends Activity {
                 values.put(Trip.SHAPE_ID, nextLine[Trip.SHAPE_ID_INDEX]);
                 values.put(Trip.WHEELCHAIR_ACCESSIBLE, nextLine[Trip.WHEELCHAIR_ACCESSIBLE_INDEX]);
 
-                newRowId = db.insert(
-                        Tables.TRIP,
-                        null,
-                        values);
+                insertValues(db, Tables.TRIP, values, nextLine);
             }
         } catch (IOException e) {
-            Log.e(TAG, String.format("insertTrips: Error happened inserting row with ID %d.", newRowId));
+            Log.e(TAG, "insertTrips: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
         Log.d(TAG, "processFiles: Trips imported.");
@@ -299,7 +278,6 @@ public class MainActivity extends Activity {
     private void insertStopTimes(SQLiteDatabase db, CSVReader reader) {
         String[] nextLine;
 
-        long newRowId = 0;
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
@@ -310,13 +288,10 @@ public class MainActivity extends Activity {
                 values.put(StopTime.STOP_ID, nextLine[StopTime.STOP_ID_INDEX]);
                 values.put(StopTime.STOP_SEQUENCE, nextLine[StopTime.STOP_SEQUENCE_INDEX]);
 
-                newRowId = db.insert(
-                        Tables.STOP_TIME,
-                        null,
-                        values);
+                insertValues(db, Tables.STOP_TIME, values, nextLine);
             }
         } catch (IOException e) {
-            Log.e(TAG, String.format("insertStopTimes: Error happened inserting row with ID %d.", newRowId));
+            Log.e(TAG, "insertStopTimes: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
         Log.d(TAG, "processFiles: StopTimes imported.");
