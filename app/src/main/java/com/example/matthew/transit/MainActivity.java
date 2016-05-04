@@ -16,6 +16,17 @@ import android.os.ParcelFileDescriptor;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.example.matthew.transit.TransitContract.Agency;
+import com.example.matthew.transit.TransitContract.Calendar;
+import com.example.matthew.transit.TransitContract.CalendarDate;
+import com.example.matthew.transit.TransitContract.FareAttribute;
+import com.example.matthew.transit.TransitContract.FareRule;
+import com.example.matthew.transit.TransitContract.Route;
+import com.example.matthew.transit.TransitContract.Shape;
+import com.example.matthew.transit.TransitContract.Stop;
+import com.example.matthew.transit.TransitContract.StopTime;
+import com.example.matthew.transit.TransitContract.Trip;
+import com.example.matthew.transit.TransitDatabaseHelper.Tables;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;
 
@@ -53,89 +64,6 @@ public class MainActivity extends Activity {
     private Realm realm;
     private SharedPreferences settings;
 
-    private CSVReader getCSVReader(File file) {
-        CSVReader reader = null;
-        try {
-            reader = new CSVReaderBuilder(new FileReader(file))
-                    .withSkipLines(1)
-                    .build();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-        return reader;
-    }
-
-    private void processDownload() {
-        ParcelFileDescriptor pfd = null;
-
-        try {
-            // open a parcel file descriptor using the file just downloaded
-            pfd = manager.openDownloadedFile(downloadReference);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        }
-
-        //ArrayList<File> files = extractFiles(pfd);
-        File[] files = extractFiles(pfd);
-
-        processFiles(files);
-        //new DatabaseImportTask().execute(files);
-    }
-
-    private void processFiles(File[] files) {
-
-        // delete the database; start over
-        deleteDatabase(DATABASE_NAME);
-
-        TransitDatabaseHelper mTransitDatabaseHelper = new TransitDatabaseHelper(getApplicationContext(), DATABASE_NAME);
-        SQLiteDatabase db = mTransitDatabaseHelper.getWritableDatabase();
-
-        ArrayList<String> fileNames = new ArrayList<>();
-        // FIXME: 16/04/16 CSVReader is final, so setting it won't change anything about it, including the number of lines read.
-        final ArrayList<CSVReader> readers = new ArrayList<>();
-
-        for (File file :
-                files) {
-            fileNames.add(file.getName());
-            readers.add(getCSVReader(file));
-        }
-
-        final int AGENCY_INDEX = (fileNames.indexOf("agency.txt"));
-        final int STOP_TIMES_INDEX = (fileNames.indexOf("stop_times.txt"));
-        final int TRIPS_INDEX = (fileNames.indexOf("trips.txt"));
-        final int FARE_RULES_INDEX = (fileNames.indexOf("fare_rules.txt"));
-        final int STOPS_INDEX = (fileNames.indexOf("stops.txt"));
-        final int SHAPES_INDEX = (fileNames.indexOf("shapes.txt"));
-        final int ROUTES_INDEX = (fileNames.indexOf("routes.txt"));
-        final int FARE_ATTRIBUTES_INDEX = (fileNames.indexOf("fare_attributes.txt"));
-        final int CALENDAR_DATES_INDEX = (fileNames.indexOf("calendar_dates.txt"));
-        final int CALENDARS_INDEX = (fileNames.indexOf("calendar.txt"));
-
-        db.beginTransaction();
-        try {
-
-            insertAgencies(db, readers.get(AGENCY_INDEX));
-
-            insertCalendars(db, readers.get(CALENDARS_INDEX));
-            insertCalendarDates(db, readers.get(CALENDAR_DATES_INDEX));
-            insertFareAttributes(db, readers.get(FARE_ATTRIBUTES_INDEX));
-            insertRoutes(db, readers.get(ROUTES_INDEX));
-            insertShapes(db, readers.get(SHAPES_INDEX));
-            insertStops(db, readers.get(STOPS_INDEX));
-
-            insertFareRules(db, readers.get(FARE_RULES_INDEX));
-            insertTrips(db, readers.get(TRIPS_INDEX));
-
-            insertStopTimes(db, readers.get(STOP_TIMES_INDEX));
-
-            db.setTransactionSuccessful();
-            Log.d(TAG, "processFiles: Import successful!");
-        } finally {
-            db.endTransaction();
-            db.close();
-        }
-    }
-
     private void insertAgencies(SQLiteDatabase db, CSVReader reader) {
         String[] nextLine;
 
@@ -143,14 +71,14 @@ public class MainActivity extends Activity {
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
-                values.put(TransitContract.Agency.AGENCY_NAME, nextLine[TransitContract.Agency.AGENCY_NAME_INDEX]);
-                values.put(TransitContract.Agency.AGENCY_URL, nextLine[TransitContract.Agency.AGENCY_URL_INDEX]);
-                values.put(TransitContract.Agency.AGENCY_TIMEZONE, nextLine[TransitContract.Agency.AGENCY_TIMEZONE_INDEX]);
-                values.put(TransitContract.Agency.AGENCY_LANG, nextLine[TransitContract.Agency.AGENCY_LANG_INDEX]);
-                values.put(TransitContract.Agency.AGENCY_PHONE, nextLine[TransitContract.Agency.AGENCY_PHONE_INDEX]);
+                values.put(Agency.AGENCY_NAME, nextLine[Agency.AGENCY_NAME_INDEX]);
+                values.put(Agency.AGENCY_URL, nextLine[Agency.AGENCY_URL_INDEX]);
+                values.put(Agency.AGENCY_TIMEZONE, nextLine[Agency.AGENCY_TIMEZONE_INDEX]);
+                values.put(Agency.AGENCY_LANG, nextLine[Agency.AGENCY_LANG_INDEX]);
+                values.put(Agency.AGENCY_PHONE, nextLine[Agency.AGENCY_PHONE_INDEX]);
 
                 newRowId = db.insert(
-                        TransitDatabaseHelper.Tables.AGENCY,
+                        Tables.AGENCY,
                         null,
                         values);
             }
@@ -168,19 +96,19 @@ public class MainActivity extends Activity {
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
-                values.put(TransitContract.Calendar.SERVICE_ID, nextLine[TransitContract.Calendar.SERVICE_ID_INDEX]);
-                values.put(TransitContract.Calendar.MONDAY, nextLine[TransitContract.Calendar.MONDAY_INDEX]);
-                values.put(TransitContract.Calendar.TUESDAY, nextLine[TransitContract.Calendar.TUESDAY_INDEX]);
-                values.put(TransitContract.Calendar.WEDNESDAY, nextLine[TransitContract.Calendar.WEDNESDAY_INDEX]);
-                values.put(TransitContract.Calendar.THURSDAY, nextLine[TransitContract.Calendar.THURSDAY_INDEX]);
-                values.put(TransitContract.Calendar.FRIDAY, nextLine[TransitContract.Calendar.FRIDAY_INDEX]);
-                values.put(TransitContract.Calendar.SATURDAY, nextLine[TransitContract.Calendar.SATURDAY_INDEX]);
-                values.put(TransitContract.Calendar.SUNDAY, nextLine[TransitContract.Calendar.SUNDAY_INDEX]);
-                values.put(TransitContract.Calendar.START_DATE, nextLine[TransitContract.Calendar.START_DATE_INDEX]);
-                values.put(TransitContract.Calendar.END_DATE, nextLine[TransitContract.Calendar.END_DATE_INDEX]);
+                values.put(Calendar.SERVICE_ID, nextLine[Calendar.SERVICE_ID_INDEX]);
+                values.put(Calendar.MONDAY, nextLine[Calendar.MONDAY_INDEX]);
+                values.put(Calendar.TUESDAY, nextLine[Calendar.TUESDAY_INDEX]);
+                values.put(Calendar.WEDNESDAY, nextLine[Calendar.WEDNESDAY_INDEX]);
+                values.put(Calendar.THURSDAY, nextLine[Calendar.THURSDAY_INDEX]);
+                values.put(Calendar.FRIDAY, nextLine[Calendar.FRIDAY_INDEX]);
+                values.put(Calendar.SATURDAY, nextLine[Calendar.SATURDAY_INDEX]);
+                values.put(Calendar.SUNDAY, nextLine[Calendar.SUNDAY_INDEX]);
+                values.put(Calendar.START_DATE, nextLine[Calendar.START_DATE_INDEX]);
+                values.put(Calendar.END_DATE, nextLine[Calendar.END_DATE_INDEX]);
 
                 newRowId = db.insert(
-                        TransitDatabaseHelper.Tables.CALENDAR,
+                        Tables.CALENDAR,
                         null,
                         values);
             }
@@ -198,12 +126,12 @@ public class MainActivity extends Activity {
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
-                values.put(TransitContract.CalendarDate.SERVICE_ID, nextLine[TransitContract.CalendarDate.SERVICE_ID_INDEX]);
-                values.put(TransitContract.CalendarDate.DATE, nextLine[TransitContract.CalendarDate.DATE_INDEX]);
-                values.put(TransitContract.CalendarDate.EXCEPTION_TYPE, nextLine[TransitContract.CalendarDate.EXCEPTION_TYPE_INDEX]);
+                values.put(CalendarDate.SERVICE_ID, nextLine[CalendarDate.SERVICE_ID_INDEX]);
+                values.put(CalendarDate.DATE, nextLine[CalendarDate.DATE_INDEX]);
+                values.put(CalendarDate.EXCEPTION_TYPE, nextLine[CalendarDate.EXCEPTION_TYPE_INDEX]);
 
                 newRowId = db.insert(
-                        TransitDatabaseHelper.Tables.CALENDAR_DATE,
+                        Tables.CALENDAR_DATE,
                         null,
                         values);
             }
@@ -221,15 +149,15 @@ public class MainActivity extends Activity {
         try {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
-                values.put(TransitContract.FareAttribute.FARE_ID, nextLine[TransitContract.FareAttribute.FARE_ID_INDEX]);
-                values.put(TransitContract.FareAttribute.PRICE, nextLine[TransitContract.FareAttribute.PRICE_INDEX]);
-                values.put(TransitContract.FareAttribute.CURRENCY_TYPE, nextLine[TransitContract.FareAttribute.CURRENCY_TYPE_INDEX]);
-                values.put(TransitContract.FareAttribute.PAYMENT_METHOD, nextLine[TransitContract.FareAttribute.PAYMENT_METHOD_INDEX]);
-                values.put(TransitContract.FareAttribute.TRANSFERS, nextLine[TransitContract.FareAttribute.TRANSFERS_INDEX]);
-                values.put(TransitContract.FareAttribute.TRANSFER_DURATION, nextLine[TransitContract.FareAttribute.TRANSFER_DURATION_INDEX]);
+                values.put(FareAttribute.FARE_ID, nextLine[FareAttribute.FARE_ID_INDEX]);
+                values.put(FareAttribute.PRICE, nextLine[FareAttribute.PRICE_INDEX]);
+                values.put(FareAttribute.CURRENCY_TYPE, nextLine[FareAttribute.CURRENCY_TYPE_INDEX]);
+                values.put(FareAttribute.PAYMENT_METHOD, nextLine[FareAttribute.PAYMENT_METHOD_INDEX]);
+                values.put(FareAttribute.TRANSFERS, nextLine[FareAttribute.TRANSFERS_INDEX]);
+                values.put(FareAttribute.TRANSFER_DURATION, nextLine[FareAttribute.TRANSFER_DURATION_INDEX]);
 
                 newRowId = db.insert(
-                        TransitDatabaseHelper.Tables.FARE_ATTRIBUTE,
+                        Tables.FARE_ATTRIBUTE,
                         null,
                         values);
             }
@@ -248,15 +176,15 @@ public class MainActivity extends Activity {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
 
-                values.put(TransitContract.Route.ROUTE_ID, nextLine[TransitContract.Route.ROUTE_ID_INDEX]);
-                values.put(TransitContract.Route.ROUTE_SHORT_NAME, nextLine[TransitContract.Route.ROUTE_SHORT_NAME_INDEX]);
-                values.put(TransitContract.Route.ROUTE_LONG_NAME, nextLine[TransitContract.Route.ROUTE_LONG_NAME_INDEX]);
-                values.put(TransitContract.Route.ROUTE_TYPE, nextLine[TransitContract.Route.ROUTE_TYPE_INDEX]);
-                values.put(TransitContract.Route.ROUTE_COLOR, nextLine[TransitContract.Route.ROUTE_COLOR_INDEX]);
-                values.put(TransitContract.Route.ROUTE_TEXT_COLOR, nextLine[TransitContract.Route.ROUTE_TEXT_COLOR_INDEX]);
+                values.put(Route.ROUTE_ID, nextLine[Route.ROUTE_ID_INDEX]);
+                values.put(Route.ROUTE_SHORT_NAME, nextLine[Route.ROUTE_SHORT_NAME_INDEX]);
+                values.put(Route.ROUTE_LONG_NAME, nextLine[Route.ROUTE_LONG_NAME_INDEX]);
+                values.put(Route.ROUTE_TYPE, nextLine[Route.ROUTE_TYPE_INDEX]);
+                values.put(Route.ROUTE_COLOR, nextLine[Route.ROUTE_COLOR_INDEX]);
+                values.put(Route.ROUTE_TEXT_COLOR, nextLine[Route.ROUTE_TEXT_COLOR_INDEX]);
 
                 newRowId = db.insert(
-                        TransitDatabaseHelper.Tables.ROUTE,
+                        Tables.ROUTE,
                         null,
                         values);
             }
@@ -275,13 +203,13 @@ public class MainActivity extends Activity {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
 
-                values.put(TransitContract.Shape.SHAPE_ID, nextLine[TransitContract.Shape.SHAPE_ID_INDEX]);
-                values.put(TransitContract.Shape.SHAPE_PT_LAT, nextLine[TransitContract.Shape.SHAPE_PT_LAT_INDEX]);
-                values.put(TransitContract.Shape.SHAPE_PT_LON, nextLine[TransitContract.Shape.SHAPE_PT_LON_INDEX]);
-                values.put(TransitContract.Shape.SHAPE_PT_SEQUENCE, nextLine[TransitContract.Shape.SHAPE_PT_SEQUENCE_INDEX]);
+                values.put(Shape.SHAPE_ID, nextLine[Shape.SHAPE_ID_INDEX]);
+                values.put(Shape.SHAPE_PT_LAT, nextLine[Shape.SHAPE_PT_LAT_INDEX]);
+                values.put(Shape.SHAPE_PT_LON, nextLine[Shape.SHAPE_PT_LON_INDEX]);
+                values.put(Shape.SHAPE_PT_SEQUENCE, nextLine[Shape.SHAPE_PT_SEQUENCE_INDEX]);
 
                 newRowId = db.insert(
-                        TransitDatabaseHelper.Tables.SHAPE,
+                        Tables.SHAPE,
                         null,
                         values);
             }
@@ -300,15 +228,15 @@ public class MainActivity extends Activity {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
 
-                values.put(TransitContract.Stop.STOP_ID, nextLine[TransitContract.Stop.STOP_ID_INDEX]);
-                values.put(TransitContract.Stop.STOP_CODE, nextLine[TransitContract.Stop.STOP_CODE_INDEX]);
-                values.put(TransitContract.Stop.STOP_NAME, nextLine[TransitContract.Stop.STOP_NAME_INDEX]);
-                values.put(TransitContract.Stop.STOP_LAT, nextLine[TransitContract.Stop.STOP_LAT_INDEX]);
-                values.put(TransitContract.Stop.STOP_LON, nextLine[TransitContract.Stop.STOP_LON_INDEX]);
-                values.put(TransitContract.Stop.STOP_URL, nextLine[TransitContract.Stop.STOP_URL_INDEX]);
+                values.put(Stop.STOP_ID, nextLine[Stop.STOP_ID_INDEX]);
+                values.put(Stop.STOP_CODE, nextLine[Stop.STOP_CODE_INDEX]);
+                values.put(Stop.STOP_NAME, nextLine[Stop.STOP_NAME_INDEX]);
+                values.put(Stop.STOP_LAT, nextLine[Stop.STOP_LAT_INDEX]);
+                values.put(Stop.STOP_LON, nextLine[Stop.STOP_LON_INDEX]);
+                values.put(Stop.STOP_URL, nextLine[Stop.STOP_URL_INDEX]);
 
                 newRowId = db.insert(
-                        TransitDatabaseHelper.Tables.STOP,
+                        Tables.STOP,
                         null,
                         values);
             }
@@ -327,11 +255,11 @@ public class MainActivity extends Activity {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
 
-                values.put(TransitContract.FareRule.FARE_ID, nextLine[TransitContract.FareRule.FARE_ID_INDEX]);
-                values.put(TransitContract.FareRule.ROUTE_ID, nextLine[TransitContract.FareRule.ROUTE_ID_INDEX]);
+                values.put(FareRule.FARE_ID, nextLine[FareRule.FARE_ID_INDEX]);
+                values.put(FareRule.ROUTE_ID, nextLine[FareRule.ROUTE_ID_INDEX]);
 
                 newRowId = db.insert(
-                        TransitDatabaseHelper.Tables.FARE_RULE,
+                        Tables.FARE_RULE,
                         null,
                         values);
             }
@@ -350,17 +278,17 @@ public class MainActivity extends Activity {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
 
-                values.put(TransitContract.Trip.ROUTE_ID, nextLine[TransitContract.Trip.ROUTE_ID_INDEX]);
-                values.put(TransitContract.Trip.SERVICE_ID, nextLine[TransitContract.Trip.SERVICE_ID_INDEX]);
-                values.put(TransitContract.Trip.TRIP_ID, nextLine[TransitContract.Trip.TRIP_ID_INDEX]);
-                values.put(TransitContract.Trip.TRIP_HEADSIGN, nextLine[TransitContract.Trip.TRIP_HEADSIGN_INDEX]);
-                values.put(TransitContract.Trip.DIRECTION_ID, nextLine[TransitContract.Trip.DIRECTION_ID_INDEX]);
-                values.put(TransitContract.Trip.BLOCK_ID, nextLine[TransitContract.Trip.BLOCK_ID_INDEX]);
-                values.put(TransitContract.Trip.SHAPE_ID, nextLine[TransitContract.Trip.SHAPE_ID_INDEX]);
-                values.put(TransitContract.Trip.WHEELCHAIR_ACCESSIBLE, nextLine[TransitContract.Trip.WHEELCHAIR_ACCESSIBLE_INDEX]);
+                values.put(Trip.ROUTE_ID, nextLine[Trip.ROUTE_ID_INDEX]);
+                values.put(Trip.SERVICE_ID, nextLine[Trip.SERVICE_ID_INDEX]);
+                values.put(Trip.TRIP_ID, nextLine[Trip.TRIP_ID_INDEX]);
+                values.put(Trip.TRIP_HEADSIGN, nextLine[Trip.TRIP_HEADSIGN_INDEX]);
+                values.put(Trip.DIRECTION_ID, nextLine[Trip.DIRECTION_ID_INDEX]);
+                values.put(Trip.BLOCK_ID, nextLine[Trip.BLOCK_ID_INDEX]);
+                values.put(Trip.SHAPE_ID, nextLine[Trip.SHAPE_ID_INDEX]);
+                values.put(Trip.WHEELCHAIR_ACCESSIBLE, nextLine[Trip.WHEELCHAIR_ACCESSIBLE_INDEX]);
 
                 newRowId = db.insert(
-                        TransitDatabaseHelper.Tables.TRIP,
+                        Tables.TRIP,
                         null,
                         values);
             }
@@ -379,14 +307,14 @@ public class MainActivity extends Activity {
             while ((nextLine = reader.readNext()) != null) {
                 ContentValues values = new ContentValues();
 
-                values.put(TransitContract.StopTime.TRIP_ID, nextLine[TransitContract.StopTime.TRIP_ID_INDEX]);
-                values.put(TransitContract.StopTime.ARRIVAL_TIME, nextLine[TransitContract.StopTime.ARRIVAL_TIME_INDEX]);
-                values.put(TransitContract.StopTime.DEPARTURE_TIME, nextLine[TransitContract.StopTime.DEPARTURE_TIME_INDEX]);
-                values.put(TransitContract.StopTime.STOP_ID, nextLine[TransitContract.StopTime.STOP_ID_INDEX]);
-                values.put(TransitContract.StopTime.STOP_SEQUENCE, nextLine[TransitContract.StopTime.STOP_SEQUENCE_INDEX]);
+                values.put(StopTime.TRIP_ID, nextLine[StopTime.TRIP_ID_INDEX]);
+                values.put(StopTime.ARRIVAL_TIME, nextLine[StopTime.ARRIVAL_TIME_INDEX]);
+                values.put(StopTime.DEPARTURE_TIME, nextLine[StopTime.DEPARTURE_TIME_INDEX]);
+                values.put(StopTime.STOP_ID, nextLine[StopTime.STOP_ID_INDEX]);
+                values.put(StopTime.STOP_SEQUENCE, nextLine[StopTime.STOP_SEQUENCE_INDEX]);
 
                 newRowId = db.insert(
-                        TransitDatabaseHelper.Tables.STOP_TIME,
+                        Tables.STOP_TIME,
                         null,
                         values);
             }
@@ -395,28 +323,6 @@ public class MainActivity extends Activity {
             e.printStackTrace();
         }
         Log.d(TAG, "processFiles: StopTimes imported.");
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        settings = getSharedPreferences("settings", 0);
-
-        manager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
-
-        downloadReference = settings.getLong("lastTransitDownload", -1);
-
-        //realm = Realm.getDefaultInstance();
-
-        //if download exists...
-        if (downloadExists()) {
-            processDownload();
-        } else {
-            // later calls processDownload
-            startDownload();
-        }
     }
 
     /**
@@ -491,14 +397,28 @@ public class MainActivity extends Activity {
         registerReceiver(onNotificationClick, new IntentFilter(DownloadManager.ACTION_NOTIFICATION_CLICKED));
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
+    private void processDownload() {
+        ParcelFileDescriptor pfd = null;
 
-        unregisterReceiver(onComplete);
-        unregisterReceiver(onNotificationClick);
+        try {
+            // open a parcel file descriptor using the file just downloaded
+            pfd = manager.openDownloadedFile(downloadReference);
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+
+        //ArrayList<File> files = extractFiles(pfd);
+        File[] files = extractFiles(pfd);
+
+        processFiles(files);
+        //new DatabaseImportTask().execute(files);
     }
 
+    /**
+     * Extract the the files from the zip file given
+     * @param pfd
+     * @return
+     */
     private File[] extractFiles(ParcelFileDescriptor pfd) {
         ArrayList<File> files = new ArrayList<>();
 
@@ -536,5 +456,101 @@ public class MainActivity extends Activity {
         File[] fileList = new File[files.size()];
         fileList = files.toArray(fileList);
         return fileList;
+    }
+
+    private CSVReader getCSVReader(File file) {
+        CSVReader reader = null;
+        try {
+            reader = new CSVReaderBuilder(new FileReader(file))
+                    .withSkipLines(1)
+                    .build();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return reader;
+    }
+
+    private void processFiles(File[] files) {
+
+        // delete the database; start over
+        deleteDatabase(DATABASE_NAME);
+
+        TransitDatabaseHelper mTransitDatabaseHelper = new TransitDatabaseHelper(getApplicationContext(), DATABASE_NAME);
+        SQLiteDatabase db = mTransitDatabaseHelper.getWritableDatabase();
+
+        ArrayList<String> fileNames = new ArrayList<>();
+        // FIXME: 16/04/16 CSVReader is final, so setting it won't change anything about it, including the number of lines read.
+        final ArrayList<CSVReader> readers = new ArrayList<>();
+
+        for (File file :
+                files) {
+            fileNames.add(file.getName());
+            readers.add(getCSVReader(file));
+        }
+
+        final int AGENCY_INDEX = (fileNames.indexOf("agency.txt"));
+        final int STOP_TIMES_INDEX = (fileNames.indexOf("stop_times.txt"));
+        final int TRIPS_INDEX = (fileNames.indexOf("trips.txt"));
+        final int FARE_RULES_INDEX = (fileNames.indexOf("fare_rules.txt"));
+        final int STOPS_INDEX = (fileNames.indexOf("stops.txt"));
+        final int SHAPES_INDEX = (fileNames.indexOf("shapes.txt"));
+        final int ROUTES_INDEX = (fileNames.indexOf("routes.txt"));
+        final int FARE_ATTRIBUTES_INDEX = (fileNames.indexOf("fare_attributes.txt"));
+        final int CALENDAR_DATES_INDEX = (fileNames.indexOf("calendar_dates.txt"));
+        final int CALENDARS_INDEX = (fileNames.indexOf("calendar.txt"));
+
+        db.beginTransaction();
+        try {
+
+            insertAgencies(db, readers.get(AGENCY_INDEX));
+
+            insertCalendars(db, readers.get(CALENDARS_INDEX));
+            insertCalendarDates(db, readers.get(CALENDAR_DATES_INDEX));
+            insertFareAttributes(db, readers.get(FARE_ATTRIBUTES_INDEX));
+            insertRoutes(db, readers.get(ROUTES_INDEX));
+            insertShapes(db, readers.get(SHAPES_INDEX));
+            insertStops(db, readers.get(STOPS_INDEX));
+
+            insertFareRules(db, readers.get(FARE_RULES_INDEX));
+            insertTrips(db, readers.get(TRIPS_INDEX));
+
+            insertStopTimes(db, readers.get(STOP_TIMES_INDEX));
+
+            db.setTransactionSuccessful();
+            Log.d(TAG, "processFiles: Import successful!");
+        } finally {
+            db.endTransaction();
+            db.close();
+        }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        settings = getSharedPreferences("settings", 0);
+
+        manager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
+
+        downloadReference = settings.getLong("lastTransitDownload", -1);
+
+        //realm = Realm.getDefaultInstance();
+
+        //if download exists...
+        if (downloadExists()) {
+            processDownload();
+        } else {
+            // later calls processDownload
+            startDownload();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        unregisterReceiver(onComplete);
+        unregisterReceiver(onNotificationClick);
     }
 }
