@@ -388,8 +388,9 @@ public class MainActivity extends Activity {
 
     /**
      * Extract the the files from the zip file given
-     * @param pfd
-     * @return
+     *
+     * @param pfd the zip file to extract
+     * @return the extracted files
      */
     private File[] extractFiles(ParcelFileDescriptor pfd) {
         ArrayList<File> files = new ArrayList<>();
