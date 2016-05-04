@@ -41,8 +41,6 @@ import java.util.ArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
-import io.realm.Realm;
-
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getName();
     private static final String FILE_NAME = "gtfs.zip";
@@ -61,7 +59,6 @@ public class MainActivity extends Activity {
             processDownload();
         }
     };
-    private Realm realm;
     private SharedPreferences settings;
 
     private void insertAgencies(SQLiteDatabase db, CSVReader reader) {
@@ -534,8 +531,6 @@ public class MainActivity extends Activity {
         manager = (DownloadManager) getSystemService(DOWNLOAD_SERVICE);
 
         downloadReference = settings.getLong("lastTransitDownload", -1);
-
-        //realm = Realm.getDefaultInstance();
 
         //if download exists...
         if (downloadExists()) {

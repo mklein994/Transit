@@ -1,15 +1,12 @@
 package com.example.matthew.transit.model;
 
-import io.realm.RealmObject;
-import io.realm.annotations.Required;
-
 /**
  * Created by matthew on 11/04/16.
  */
-public class Transfer extends RealmObject {
-    @Required
+public class Transfer {
+    // required
     private String fromStopId;
-    @Required
+    // required
     private String toStopId;
     // required
     private byte transferType;

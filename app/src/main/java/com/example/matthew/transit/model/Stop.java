@@ -1,46 +1,37 @@
 package com.example.matthew.transit.model;
 
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
-
 /**
  * Created by matthew on 11/04/16.
  */
-public class Stop extends RealmObject {
+public class Stop {
     private static final int STOP_ID = 0;
     private static final int STOP_CODE = 1;
     private static final int STOP_NAME = 2;
     private static final int STOP_LAT = 3;
     private static final int STOP_LON = 4;
     private static final int STOP_URL = 5;
-    @PrimaryKey
+    // primary key
     private String stopId;
     private String stopCode;
-    @Required
+    // required
     private String stopName;
-    @Ignore
+    // ignore
     private String stopDesc;
     // required
     private double stopLat;
     // required
     private double stopLon;
-    @Ignore
+    // ignore
     private String zoneId;
     private String stopUrl;
-    @Ignore
+    // ignore
     private byte locationType;
-    @Ignore
+    // ignore
     private String parentStation;
-    @Ignore
+    // ignore
     private String stopTimezone;
-    @Ignore
+    // ignore
     private byte wheelchairBoarding;
-
-    private RealmList<StopTime> stopTimes;
-    private RealmList<Trip> trips;
 
     public Stop() {
     }
@@ -148,21 +139,5 @@ public class Stop extends RealmObject {
 
     public void setWheelchairBoarding(byte wheelchairBoarding) {
         this.wheelchairBoarding = wheelchairBoarding;
-    }
-
-    public RealmList<Trip> getTrips() {
-        return trips;
-    }
-
-    public void setTrips(RealmList<Trip> trips) {
-        this.trips = trips;
-    }
-
-    public RealmList<StopTime> getStopTimes() {
-        return stopTimes;
-    }
-
-    public void setStopTimes(RealmList<StopTime> stopTimes) {
-        this.stopTimes = stopTimes;
     }
 }

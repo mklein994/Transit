@@ -1,13 +1,9 @@
 package com.example.matthew.transit.model;
 
-import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
-import io.realm.annotations.Required;
-
 /**
  * Created by matthew on 11/04/16.
  */
-public class Agency extends RealmObject {
+public class Agency {
 
     private static final int AGENCY_NAME = 0;
     private static final int AGENCY_URL = 1;
@@ -16,22 +12,22 @@ public class Agency extends RealmObject {
     private static final int AGENCY_PHONE = 4;
 
     // should be the primary key, except that it can be null.
-    @Ignore
+    // ignore
     private String agencyId;
-    @Required
+    // required
     private String agencyName;
-    @Required
+    // required
     private String agencyUrl;
 
-    @Required
+    // required
     private String agencyTimezone;
 
     private String agencyLang;
 
     private String agencyPhone;
-    @Ignore
+    // ignore
     private String agencyFareUrl;
-    @Ignore
+    // ignore
     private String agencyEmail;
 
     public Agency() {

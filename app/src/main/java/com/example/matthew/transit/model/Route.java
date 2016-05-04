@@ -1,30 +1,24 @@
 package com.example.matthew.transit.model;
 
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
-
 /**
  * Created by matthew on 11/04/16.
  */
-public class Route extends RealmObject {
+public class Route {
     private static final int ROUTE_ID = 0;
     private static final int ROUTE_SHORT_NAME = 1;
     private static final int ROUTE_LONG_NAME = 2;
     private static final int ROUTE_TYPE = 3;
     private static final int ROUTE_COLOR = 4;
     private static final int ROUTE_TEXT_COLOR = 5;
-    @PrimaryKey
+    // primary key
     private String routeId;
-    @Ignore
+    // ignore
     private String agencyId;
-    @Required
+    // required
     private String routeShortName;
-    @Required
+    // required
     private String routeLongName;
-    @Ignore
+    // ignore
     private String routeDesc;
     // required
     private int routeType;
@@ -34,13 +28,6 @@ public class Route extends RealmObject {
     private String routeColor;
 
     private String routeTextColor;
-
-    private RealmList<FareRule> fareRules;
-    private RealmList<FareAttribute> fareAttributes;
-    private RealmList<Trip> trips;
-    private RealmList<Shape> shapes;
-    private RealmList<Calendar> calendars;
-    private RealmList<CalendarDate> calendarDates;
 
     public Route() {
     }
@@ -124,53 +111,5 @@ public class Route extends RealmObject {
 
     public void setRouteTextColor(String routeTextColor) {
         this.routeTextColor = routeTextColor;
-    }
-
-    public RealmList<FareRule> getFareRules() {
-        return fareRules;
-    }
-
-    public void setFareRules(RealmList<FareRule> fareRules) {
-        this.fareRules = fareRules;
-    }
-
-    public RealmList<FareAttribute> getFareAttributes() {
-        return fareAttributes;
-    }
-
-    public void setFareAttributes(RealmList<FareAttribute> fareAttributes) {
-        this.fareAttributes = fareAttributes;
-    }
-
-    public RealmList<Trip> getTrips() {
-        return trips;
-    }
-
-    public void setTrips(RealmList<Trip> trips) {
-        this.trips = trips;
-    }
-
-    public RealmList<Shape> getShapes() {
-        return shapes;
-    }
-
-    public void setShapes(RealmList<Shape> shapes) {
-        this.shapes = shapes;
-    }
-
-    public RealmList<Calendar> getCalendars() {
-        return calendars;
-    }
-
-    public void setCalendars(RealmList<Calendar> calendars) {
-        this.calendars = calendars;
-    }
-
-    public RealmList<CalendarDate> getCalendarDates() {
-        return calendarDates;
-    }
-
-    public void setCalendarDates(RealmList<CalendarDate> calendarDates) {
-        this.calendarDates = calendarDates;
     }
 }

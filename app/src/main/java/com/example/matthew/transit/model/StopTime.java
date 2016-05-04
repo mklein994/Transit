@@ -1,14 +1,9 @@
 package com.example.matthew.transit.model;
 
-import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
-
 /**
  * Created by matthew on 11/04/16.
  */
-public class StopTime extends RealmObject {
+public class StopTime {
     private static final int TRIP_ID = 0;
     private static final int ARRIVAL_TIME = 1;
     private static final int DEPARTURE_TIME = 2;
@@ -16,27 +11,27 @@ public class StopTime extends RealmObject {
     private static final int STOP_SEQUENCE = 4;
 
     // added as a composite key between tripId and stopSequence
-    @PrimaryKey
+    // primary key
     private String stopTimePK;
-    @Required
+    // required
     private String tripId;
-    @Required
+    // required
     private String arrivalTime;
-    @Required
+    // required
     private String departureTime;
-    @Required
+    // required
     private String stopId;
     // required
     private int stopSequence;
-    @Ignore
+    // ignore
     private String stopHeadsign;
-    @Ignore
+    // ignore
     private Byte pickupType;
-    @Ignore
+    // ignore
     private Byte dropOffType;
-    @Ignore
+    // ignore
     private Double shapeDistTraveled;
-    @Ignore
+    // ignore
     private Byte timepoint;
 
     public StopTime() {
@@ -138,5 +133,4 @@ public class StopTime extends RealmObject {
     public void setStopTimePK(String tripId, int stopSequence) {
         this.stopTimePK = tripId + stopSequence;
     }
-
 }

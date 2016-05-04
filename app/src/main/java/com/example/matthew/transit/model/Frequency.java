@@ -1,22 +1,19 @@
 package com.example.matthew.transit.model;
 
-import io.realm.RealmObject;
-import io.realm.annotations.Required;
-
 /**
  * Created by matthew on 11/04/16.
  */ //region Frequency model (not used)
-public class Frequency extends RealmObject {
-    @Required
+public class Frequency {
+    // required
     private String tripId;
 
-    @Required
+    // required
     private String startTime;
 
-    @Required
+    // required
     private String endTime;
 
-    @Required
+    // required
     private String headwaySecs;
 
     private Byte exactTimes;

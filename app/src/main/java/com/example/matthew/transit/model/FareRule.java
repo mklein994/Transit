@@ -1,27 +1,22 @@
 package com.example.matthew.transit.model;
 
-import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
-
 /**
  * Created by matthew on 11/04/16.
  */
-public class FareRule extends RealmObject {
+public class FareRule {
     private static final int FARE_ID = 0;
     private static final int ROUTE_ID = 1;
     // added to create a composite key from fareId and routeId
-    @PrimaryKey
+    // primary key
     private String fareRoutePK;
-    @Required
+    // required
     private String fareId;
     private String routeId;
-    @Ignore
+    // ignore
     private String originId;
-    @Ignore
+    // ignore
     private String destinationId;
-    @Ignore
+    // ignore
     private String containsId;
 
     public FareRule() {

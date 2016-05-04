@@ -2,19 +2,17 @@ package com.example.matthew.transit.model;
 
 import java.util.Date;
 
-import io.realm.annotations.Required;
-
 /**
  * Created by matthew on 11/04/16.
  */
 public class FeedInfo {
-    @Required
+    // required
     private String feedPublisherName;
 
-    @Required
+    // required
     private String feedPublisherUrl;
 
-    @Required
+    // required
     private String feedLang;
 
     private Date feedStartDate;

@@ -1,15 +1,9 @@
 package com.example.matthew.transit.model;
 
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.Ignore;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
-
 /**
  * Created by matthew on 11/04/16.
  */
-public class Trip extends RealmObject {
+public class Trip {
 
     private static final int ROUTE_ID = 0;
     private static final int SERVICE_ID = 1;
@@ -19,24 +13,21 @@ public class Trip extends RealmObject {
     private static final int BLOCK_ID = 5;
     private static final int SHAPE_ID = 6;
     private static final int WHEELCHAIR_ACCESSIBLE = 7;
-    @Required
+    // required
     private String routeId;
-    @Required
+    // required
     private String serviceId;
-    @PrimaryKey
+    // primary key
     private String tripId;
     private String tripHeadsign;
-    @Ignore
+    // ignore
     private String tripShortName;
     private Boolean directionId;
     private String blockId;
     private String shapeId;
     private Integer wheelchairAccessible;
-    @Ignore
+    // ignore
     private Byte bikesAllowed;
-
-    private RealmList<StopTime> stopTimes;
-    private RealmList<Stop> stops;
 
     public Trip() {
     }
@@ -130,21 +121,5 @@ public class Trip extends RealmObject {
 
     public void setBikesAllowed(Byte bikesAllowed) {
         this.bikesAllowed = bikesAllowed;
-    }
-
-    public RealmList<StopTime> getStopTimes() {
-        return stopTimes;
-    }
-
-    public void setStopTimes(RealmList<StopTime> stopTimes) {
-        this.stopTimes = stopTimes;
-    }
-
-    public RealmList<Stop> getStops() {
-        return stops;
-    }
-
-    public void setStops(RealmList<Stop> stops) {
-        this.stops = stops;
     }
 }

@@ -4,34 +4,24 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import io.realm.RealmList;
-import io.realm.RealmObject;
-import io.realm.annotations.PrimaryKey;
-import io.realm.annotations.Required;
-
 /**
  * Created by matthew on 11/04/16.
  */
-public class CalendarDate extends RealmObject {
+public class CalendarDate {
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.CANADA);
     private static final int SERVICE_ID = 0;
     private static final int DATE = 1;
     private static final int EXCEPTION_TYPE = 2;
 
     // added manually as a foreign key between serviceId and date
-    @PrimaryKey
+    // primary key
     private String calendarPK;
-    @Required
+    // required
     private String serviceId;
-    @Required
+    // required
     private Date date;
     // required
     private int exceptionType;
-
-    private RealmList<Trip> trips;
-    private RealmList<Route> routes;
-    private RealmList<Shape> shapes;
-
 
     public CalendarDate(String[] fields) {
         this.serviceId = fields[SERVICE_ID];
@@ -73,29 +63,5 @@ public class CalendarDate extends RealmObject {
 
     public void setCalendarPK(String serviceId, Date date) {
         this.calendarPK = serviceId + dateFormat.format(date);
-    }
-
-    public RealmList<Trip> getTrips() {
-        return trips;
-    }
-
-    public void setTrips(RealmList<Trip> trips) {
-        this.trips = trips;
-    }
-
-    public RealmList<Route> getRoutes() {
-        return routes;
-    }
-
-    public void setRoutes(RealmList<Route> routes) {
-        this.routes = routes;
-    }
-
-    public RealmList<Shape> getShapes() {
-        return shapes;
-    }
-
-    public void setShapes(RealmList<Shape> shapes) {
-        this.shapes = shapes;
     }
 }
