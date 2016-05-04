@@ -477,22 +477,33 @@ public class MainActivity extends Activity {
 
             insertAgencies(db, readers.get(AGENCY_INDEX));
 
+            db.beginTransaction();
             insertCalendars(db, readers.get(CALENDARS_INDEX));
             insertCalendarDates(db, readers.get(CALENDAR_DATES_INDEX));
             insertFareAttributes(db, readers.get(FARE_ATTRIBUTES_INDEX));
             insertRoutes(db, readers.get(ROUTES_INDEX));
             insertShapes(db, readers.get(SHAPES_INDEX));
             insertStops(db, readers.get(STOPS_INDEX));
+            db.setTransactionSuccessful();
+            db.endTransaction();
 
+            db.beginTransaction();
             insertFareRules(db, readers.get(FARE_RULES_INDEX));
             insertTrips(db, readers.get(TRIPS_INDEX));
+            db.setTransactionSuccessful();
+            db.endTransaction();
 
+            db.beginTransaction();
             insertStopTimes(db, readers.get(STOP_TIMES_INDEX));
+            db.setTransactionSuccessful();
+            db.endTransaction();
 
             db.setTransactionSuccessful();
             Log.d(TAG, "processFiles: Import successful!");
         } finally {
-            db.endTransaction();
+            while (db.inTransaction()) {
+                db.endTransaction();
+            }
             db.close();
         }
     }
