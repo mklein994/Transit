@@ -84,7 +84,8 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
             Calendar.SATURDAY + INTEGER_TYPE + COMMA_SEP +
             Calendar.SUNDAY + INTEGER_TYPE + COMMA_SEP +
             Calendar.START_DATE + NUMERIC_TYPE + COMMA_SEP +
-            Calendar.END_DATE + NUMERIC_TYPE +
+            Calendar.END_DATE + NUMERIC_TYPE + COMMA_SEP +
+            "UNIQUE (" + Calendar.SERVICE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_CALENDARS =
@@ -94,7 +95,8 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
             CalendarDate._ID + PRIMARY_KEY +
             CalendarDate.SERVICE_ID + TEXT_TYPE + COMMA_SEP +
             CalendarDate.DATE + NUMERIC_TYPE + COMMA_SEP +
-            CalendarDate.EXCEPTION_TYPE + INTEGER_TYPE +
+            CalendarDate.EXCEPTION_TYPE + INTEGER_TYPE + COMMA_SEP +
+            "UNIQUE (" + CalendarDate.SERVICE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_CALENDAR_DATES =
@@ -107,7 +109,8 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
             FareAttribute.CURRENCY_TYPE + TEXT_TYPE + COMMA_SEP +
             FareAttribute.PAYMENT_METHOD + INTEGER_TYPE + COMMA_SEP +
             FareAttribute.TRANSFERS + INTEGER_TYPE + COMMA_SEP +
-            FareAttribute.TRANSFER_DURATION + INTEGER_TYPE +
+            FareAttribute.TRANSFER_DURATION + INTEGER_TYPE + COMMA_SEP +
+            "UNIQUE (" + FareAttribute.FARE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_FARE_ATTRIBUTES =
@@ -129,7 +132,8 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
             Route.ROUTE_LONG_NAME + TEXT_TYPE + COMMA_SEP +
             Route.ROUTE_TYPE + INTEGER_TYPE + COMMA_SEP +
             Route.ROUTE_COLOR + TEXT_TYPE + COMMA_SEP +
-            Route.ROUTE_TEXT_COLOR + TEXT_TYPE +
+            Route.ROUTE_TEXT_COLOR + TEXT_TYPE + COMMA_SEP +
+            "UNIQUE (" + Route.ROUTE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_ROUTES =
@@ -140,7 +144,8 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
             Shape.SHAPE_ID + TEXT_TYPE + COMMA_SEP +
             Shape.SHAPE_PT_LAT + REAL_TYPE + COMMA_SEP +
             Shape.SHAPE_PT_LON + REAL_TYPE + COMMA_SEP +
-            Shape.SHAPE_PT_SEQUENCE + INTEGER_TYPE +
+            Shape.SHAPE_PT_SEQUENCE + INTEGER_TYPE + COMMA_SEP +
+            "UNIQUE (" + Shape.SHAPE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_SHAPES =
@@ -153,7 +158,8 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
             Stop.STOP_NAME + TEXT_TYPE + COMMA_SEP +
             Stop.STOP_LAT + REAL_TYPE + COMMA_SEP +
             Stop.STOP_LON + REAL_TYPE + COMMA_SEP +
-            Stop.STOP_URL + TEXT_TYPE +
+            Stop.STOP_URL + TEXT_TYPE + COMMA_SEP +
+            "UNIQUE (" + Stop.STOP_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_STOPS =
@@ -166,6 +172,7 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
             StopTime.DEPARTURE_TIME + NUMERIC_TYPE + COMMA_SEP +
             StopTime.STOP_ID + TEXT_TYPE + References.STOP_ID + COMMA_SEP +
             StopTime.STOP_SEQUENCE + INTEGER_TYPE +
+            //"UNIQUE (" + CalendarDate.SERVICE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_STOP_TIMES =
@@ -180,7 +187,8 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
             Trip.DIRECTION_ID + INTEGER_TYPE + COMMA_SEP +
             Trip.BLOCK_ID + TEXT_TYPE + COMMA_SEP +
             Trip.SHAPE_ID + TEXT_TYPE + References.SHAPE_ID + COMMA_SEP +
-            Trip.WHEELCHAIR_ACCESSIBLE + INTEGER_TYPE +
+            Trip.WHEELCHAIR_ACCESSIBLE + INTEGER_TYPE + COMMA_SEP +
+            "UNIQUE (" + Trip.TRIP_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_TRIPS =
@@ -250,5 +258,11 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+
+    @Override
+    public void onConfigure(SQLiteDatabase db) {
+        super.onConfigure(db);
+        db.setForeignKeyConstraintsEnabled(true);
     }
 }
