@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
-import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
@@ -66,7 +65,7 @@ public class MainActivity extends Activity {
     private void insertValues(SQLiteDatabase db, String tableName, ContentValues values, String[] nextLine) {
         try {
             db.insertOrThrow(tableName, null, values);
-        } catch (SQLException e) {
+        } catch (IllegalArgumentException e) {
             Log.e(TAG,
                     String.format("insertValues: insert into %s failed: %s",
                             tableName,
