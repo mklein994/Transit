@@ -3,13 +3,15 @@ package com.example.matthew.transit;
 import android.app.Activity;
 import android.app.DownloadManager;
 import android.content.BroadcastReceiver;
-import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
+import android.database.sqlite.SQLiteTransactionListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.ParcelFileDescriptor;
@@ -62,237 +64,346 @@ public class MainActivity extends Activity {
     };
     private SharedPreferences settings;
 
-    private void insertValues(SQLiteDatabase db, String tableName, ContentValues values, String[] nextLine) {
-        try {
-            db.insertOrThrow(tableName, null, values);
-        } catch (IllegalArgumentException e) {
-            Log.e(TAG,
-                    String.format("insertValues: insert into %s failed: %s",
-                            tableName,
-                            Arrays.toString(nextLine)),
-                    e);
-            e.printStackTrace();
-        }
-    }
-
     private void insertAgencies(SQLiteDatabase db, CSVReader reader) {
-        String[] nextLine;
+        String[] nextLine = null;
 
-        try {
+        String sql = "INSERT OR REPLACE INTO " + Tables.AGENCY + " ( "
+                + Agency.AGENCY_NAME + ", "
+                + Agency.AGENCY_URL + ", "
+                + Agency.AGENCY_TIMEZONE + ", "
+                + Agency.AGENCY_LANG + ", "
+                + Agency.AGENCY_PHONE
+                + " ) VALUES ( ?, ?, ?, ?, ? )";
+
+        try (SQLiteStatement agenciesInsertStatement = db.compileStatement(sql)) {
             while ((nextLine = reader.readNext()) != null) {
-                ContentValues values = new ContentValues();
-                values.put(Agency.AGENCY_NAME, nextLine[Agency.AGENCY_NAME_INDEX]);
-                values.put(Agency.AGENCY_URL, nextLine[Agency.AGENCY_URL_INDEX]);
-                values.put(Agency.AGENCY_TIMEZONE, nextLine[Agency.AGENCY_TIMEZONE_INDEX]);
-                values.put(Agency.AGENCY_LANG, nextLine[Agency.AGENCY_LANG_INDEX]);
-                values.put(Agency.AGENCY_PHONE, nextLine[Agency.AGENCY_PHONE_INDEX]);
 
-                insertValues(db, Tables.AGENCY, values, nextLine);
+                agenciesInsertStatement.bindString(1, nextLine[Agency.AGENCY_NAME_INDEX]);
+                agenciesInsertStatement.bindString(2, nextLine[Agency.AGENCY_URL_INDEX]);
+                agenciesInsertStatement.bindString(3, nextLine[Agency.AGENCY_TIMEZONE_INDEX]);
+                agenciesInsertStatement.bindString(4, nextLine[Agency.AGENCY_LANG_INDEX]);
+                agenciesInsertStatement.bindString(5, nextLine[Agency.AGENCY_PHONE_INDEX]);
+                agenciesInsertStatement.executeInsert();
+                agenciesInsertStatement.clearBindings();
             }
         } catch (IOException e) {
-            Log.e(TAG, "insertAgencies: Error happened while parsing the csv file.", e);
+            e.printStackTrace();
+        } catch (SQLException e) {
+            Log.e(TAG, "insertAgencies: sql exception occurred.", e);
+            Log.d(TAG, "insertAgencies: nextLine: " + Arrays.toString(nextLine));
             e.printStackTrace();
         }
+
         Log.d(TAG, "processFiles: Agencies imported.");
     }
 
     private void insertCalendars(SQLiteDatabase db, CSVReader reader) {
-        String[] nextLine;
+        String[] nextLine = null;
 
-        try {
+        String sql = "INSERT OR REPLACE INTO " + Tables.CALENDAR + " ( "
+                + Calendar.SERVICE_ID + ", "
+                + Calendar.MONDAY + ", "
+                + Calendar.TUESDAY + ", "
+                + Calendar.WEDNESDAY + ", "
+                + Calendar.THURSDAY + ", "
+                + Calendar.FRIDAY + ", "
+                + Calendar.SATURDAY + ", "
+                + Calendar.SUNDAY + ", "
+                + Calendar.START_DATE + ", "
+                + Calendar.END_DATE
+                + " ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )";
+
+        try (SQLiteStatement insertCalendarsStatement = db.compileStatement(sql)) {
             while ((nextLine = reader.readNext()) != null) {
-                ContentValues values = new ContentValues();
-                values.put(Calendar.SERVICE_ID, nextLine[Calendar.SERVICE_ID_INDEX]);
-                values.put(Calendar.MONDAY, nextLine[Calendar.MONDAY_INDEX]);
-                values.put(Calendar.TUESDAY, nextLine[Calendar.TUESDAY_INDEX]);
-                values.put(Calendar.WEDNESDAY, nextLine[Calendar.WEDNESDAY_INDEX]);
-                values.put(Calendar.THURSDAY, nextLine[Calendar.THURSDAY_INDEX]);
-                values.put(Calendar.FRIDAY, nextLine[Calendar.FRIDAY_INDEX]);
-                values.put(Calendar.SATURDAY, nextLine[Calendar.SATURDAY_INDEX]);
-                values.put(Calendar.SUNDAY, nextLine[Calendar.SUNDAY_INDEX]);
-                values.put(Calendar.START_DATE, nextLine[Calendar.START_DATE_INDEX]);
-                values.put(Calendar.END_DATE, nextLine[Calendar.END_DATE_INDEX]);
 
-                insertValues(db, Tables.CALENDAR, values, nextLine);
+                insertCalendarsStatement.bindString(1, nextLine[Calendar.SERVICE_ID_INDEX]);
+                insertCalendarsStatement.bindString(2, nextLine[Calendar.MONDAY_INDEX]);
+                insertCalendarsStatement.bindString(3, nextLine[Calendar.TUESDAY_INDEX]);
+                insertCalendarsStatement.bindString(4, nextLine[Calendar.WEDNESDAY_INDEX]);
+                insertCalendarsStatement.bindString(5, nextLine[Calendar.THURSDAY_INDEX]);
+                insertCalendarsStatement.bindString(6, nextLine[Calendar.FRIDAY_INDEX]);
+                insertCalendarsStatement.bindString(7, nextLine[Calendar.SATURDAY_INDEX]);
+                insertCalendarsStatement.bindString(8, nextLine[Calendar.SUNDAY_INDEX]);
+                insertCalendarsStatement.bindString(9, nextLine[Calendar.START_DATE_INDEX]);
+                insertCalendarsStatement.bindString(10, nextLine[Calendar.END_DATE_INDEX]);
+                insertCalendarsStatement.executeInsert();
+                insertCalendarsStatement.clearBindings();
             }
+        } catch (SQLException e) {
+            Log.e(TAG, "insertCalendars: sql exception occurred.", e);
+            Log.d(TAG, "insertCalendars: nextLine: " + Arrays.toString(nextLine));
+            e.printStackTrace();
         } catch (IOException e) {
             Log.e(TAG, "insertCalendars: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
+
         Log.d(TAG, "processFiles: Calendars imported.");
     }
 
     private void insertCalendarDates(SQLiteDatabase db, CSVReader reader) {
-        String[] nextLine;
+        String[] nextLine = null;
 
-        try {
+        String sql = "INSERT OR REPLACE INTO " + Tables.CALENDAR_DATE + " ( "
+                + CalendarDate.SERVICE_ID + ", "
+                + CalendarDate.DATE + ", "
+                + CalendarDate.EXCEPTION_TYPE
+                + " ) VALUES ( ?, ?, ? )";
+
+        try (SQLiteStatement insertCalendarDatesStatement = db.compileStatement(sql)) {
             while ((nextLine = reader.readNext()) != null) {
-                ContentValues values = new ContentValues();
-                values.put(CalendarDate.SERVICE_ID, nextLine[CalendarDate.SERVICE_ID_INDEX]);
-                values.put(CalendarDate.DATE, nextLine[CalendarDate.DATE_INDEX]);
-                values.put(CalendarDate.EXCEPTION_TYPE, nextLine[CalendarDate.EXCEPTION_TYPE_INDEX]);
 
-                insertValues(db, Tables.CALENDAR_DATE, values, nextLine);
+                insertCalendarDatesStatement.bindString(1, nextLine[CalendarDate.SERVICE_ID_INDEX]);
+                insertCalendarDatesStatement.bindString(2, nextLine[CalendarDate.DATE_INDEX]);
+                insertCalendarDatesStatement.bindString(3, nextLine[CalendarDate.EXCEPTION_TYPE_INDEX]);
+                insertCalendarDatesStatement.executeInsert();
+                insertCalendarDatesStatement.clearBindings();
             }
+        } catch (SQLException e) {
+            Log.e(TAG, "insertCalendarDates: sql exception occurred.", e);
+            Log.d(TAG, "insertCalendarDates: nextLine: " + Arrays.toString(nextLine));
+            e.printStackTrace();
         } catch (IOException e) {
-            Log.e(TAG, "insertCalendarDates: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
+
         Log.d(TAG, "processFiles: CalendarDates imported.");
     }
 
     private void insertFareAttributes(SQLiteDatabase db, CSVReader reader) {
-        String[] nextLine;
+        String[] nextLine = null;
 
-        try {
+        String sql = "INSERT OR REPLACE INTO " + Tables.FARE_ATTRIBUTE + " ( "
+                + FareAttribute.FARE_ID + ", "
+                + FareAttribute.PRICE + ", "
+                + FareAttribute.CURRENCY_TYPE + ", "
+                + FareAttribute.PAYMENT_METHOD + ", "
+                + FareAttribute.TRANSFERS + ", "
+                + FareAttribute.TRANSFER_DURATION
+                + " ) VALUES ( ?, ?, ?, ?, ?, ? )";
+
+        try (SQLiteStatement insertFareAttributesStatement = db.compileStatement(sql)) {
             while ((nextLine = reader.readNext()) != null) {
-                ContentValues values = new ContentValues();
-                values.put(FareAttribute.FARE_ID, nextLine[FareAttribute.FARE_ID_INDEX]);
-                values.put(FareAttribute.PRICE, nextLine[FareAttribute.PRICE_INDEX]);
-                values.put(FareAttribute.CURRENCY_TYPE, nextLine[FareAttribute.CURRENCY_TYPE_INDEX]);
-                values.put(FareAttribute.PAYMENT_METHOD, nextLine[FareAttribute.PAYMENT_METHOD_INDEX]);
-                values.put(FareAttribute.TRANSFERS, nextLine[FareAttribute.TRANSFERS_INDEX]);
-                values.put(FareAttribute.TRANSFER_DURATION, nextLine[FareAttribute.TRANSFER_DURATION_INDEX]);
 
-                insertValues(db, Tables.FARE_ATTRIBUTE, values, nextLine);
+                insertFareAttributesStatement.bindString(1, nextLine[FareAttribute.FARE_ID_INDEX]);
+                insertFareAttributesStatement.bindString(2, nextLine[FareAttribute.PRICE_INDEX]);
+                insertFareAttributesStatement.bindString(3, nextLine[FareAttribute.CURRENCY_TYPE_INDEX]);
+                insertFareAttributesStatement.bindString(4, nextLine[FareAttribute.PAYMENT_METHOD_INDEX]);
+                insertFareAttributesStatement.bindString(5, nextLine[FareAttribute.TRANSFERS_INDEX]);
+                insertFareAttributesStatement.bindString(6, nextLine[FareAttribute.TRANSFER_DURATION_INDEX]);
+                insertFareAttributesStatement.executeInsert();
+                insertFareAttributesStatement.clearBindings();
             }
+        } catch (SQLException e) {
+            Log.e(TAG, "insertFareAttributes: sql exception occurred.", e);
+            Log.d(TAG, "insertFareAttributes: nextLine: " + Arrays.toString(nextLine));
+            e.printStackTrace();
         } catch (IOException e) {
-            Log.e(TAG, "insertFareAttributes: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
+
         Log.d(TAG, "processFiles: FareAttributes imported.");
     }
 
     private void insertRoutes(SQLiteDatabase db, CSVReader reader) {
-        String[] nextLine;
+        String[] nextLine = null;
 
-        try {
+        String sql = "INSERT OR REPLACE INTO " + Tables.ROUTE + " ( "
+                + Route.ROUTE_ID + ", "
+                + Route.ROUTE_SHORT_NAME + ", "
+                + Route.ROUTE_LONG_NAME + ", "
+                + Route.ROUTE_TYPE + ", "
+                + Route.ROUTE_COLOR + ", "
+                + Route.ROUTE_TEXT_COLOR
+                + " ) VALUES ( ?, ?, ?, ?, ?, ? )";
+
+        try (SQLiteStatement insertRoutesStatement = db.compileStatement(sql)) {
             while ((nextLine = reader.readNext()) != null) {
-                ContentValues values = new ContentValues();
 
-                values.put(Route.ROUTE_ID, nextLine[Route.ROUTE_ID_INDEX]);
-                values.put(Route.ROUTE_SHORT_NAME, nextLine[Route.ROUTE_SHORT_NAME_INDEX]);
-                values.put(Route.ROUTE_LONG_NAME, nextLine[Route.ROUTE_LONG_NAME_INDEX]);
-                values.put(Route.ROUTE_TYPE, nextLine[Route.ROUTE_TYPE_INDEX]);
-                values.put(Route.ROUTE_COLOR, nextLine[Route.ROUTE_COLOR_INDEX]);
-                values.put(Route.ROUTE_TEXT_COLOR, nextLine[Route.ROUTE_TEXT_COLOR_INDEX]);
-
-                insertValues(db, Tables.ROUTE, values, nextLine);
+                insertRoutesStatement.bindString(1, nextLine[Route.ROUTE_ID_INDEX]);
+                insertRoutesStatement.bindString(2, nextLine[Route.ROUTE_SHORT_NAME_INDEX]);
+                insertRoutesStatement.bindString(3, nextLine[Route.ROUTE_LONG_NAME_INDEX]);
+                insertRoutesStatement.bindString(4, nextLine[Route.ROUTE_TYPE_INDEX]);
+                insertRoutesStatement.bindString(5, nextLine[Route.ROUTE_COLOR_INDEX]);
+                insertRoutesStatement.bindString(6, nextLine[Route.ROUTE_TEXT_COLOR_INDEX]);
+                insertRoutesStatement.executeInsert();
+                insertRoutesStatement.clearBindings();
             }
+
+        } catch (SQLException e) {
+            Log.e(TAG, "insertRoutes: sql exception occurred.", e);
+            Log.d(TAG, "insertRoutes: nextLine: " + Arrays.toString(nextLine));
+            e.printStackTrace();
         } catch (IOException e) {
-            Log.e(TAG, "insertRoutes: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
+
         Log.d(TAG, "processFiles: Routes imported.");
     }
 
     private void insertShapes(SQLiteDatabase db, CSVReader reader) {
-        String[] nextLine;
+        String[] nextLine = null;
 
-        try {
+        String sql = "INSERT OR REPLACE INTO " + Tables.SHAPE + " ( "
+                + Shape.SHAPE_ID + ", "
+                + Shape.SHAPE_PT_LAT + ", "
+                + Shape.SHAPE_PT_LON + ", "
+                + Shape.SHAPE_PT_SEQUENCE
+                + " ) VALUES ( ?, ?, ?, ? )";
+
+        try (SQLiteStatement insertShapesStatement = db.compileStatement(sql)) {
             while ((nextLine = reader.readNext()) != null) {
-                ContentValues values = new ContentValues();
 
-                values.put(Shape.SHAPE_ID, nextLine[Shape.SHAPE_ID_INDEX]);
-                values.put(Shape.SHAPE_PT_LAT, nextLine[Shape.SHAPE_PT_LAT_INDEX]);
-                values.put(Shape.SHAPE_PT_LON, nextLine[Shape.SHAPE_PT_LON_INDEX]);
-                values.put(Shape.SHAPE_PT_SEQUENCE, nextLine[Shape.SHAPE_PT_SEQUENCE_INDEX]);
-
-                insertValues(db, Tables.SHAPE, values, nextLine);
+                insertShapesStatement.bindString(1, nextLine[Shape.SHAPE_ID_INDEX]);
+                insertShapesStatement.bindString(2, nextLine[Shape.SHAPE_PT_LAT_INDEX]);
+                insertShapesStatement.bindString(3, nextLine[Shape.SHAPE_PT_LON_INDEX]);
+                insertShapesStatement.bindString(4, nextLine[Shape.SHAPE_PT_SEQUENCE_INDEX]);
+                insertShapesStatement.executeInsert();
+                insertShapesStatement.clearBindings();
             }
+        } catch (SQLException e) {
+            Log.e(TAG, "insertShapes: sql exception occurred.", e);
+            Log.d(TAG, "insertShapes: nextLine: " + Arrays.toString(nextLine));
+            e.printStackTrace();
         } catch (IOException e) {
-            Log.e(TAG, "insertShapes: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
+
         Log.d(TAG, "processFiles: Shapes imported.");
     }
 
     private void insertStops(SQLiteDatabase db, CSVReader reader) {
-        String[] nextLine;
+        String[] nextLine = null;
 
-        try {
+        String sql = "INSERT OR REPLACE INTO " + Tables.STOP + " ( "
+                + Stop.STOP_ID + ", "
+                + Stop.STOP_CODE + ", "
+                + Stop.STOP_NAME + ", "
+                + Stop.STOP_LAT + ", "
+                + Stop.STOP_LON + ", "
+                + Stop.STOP_URL
+                + " ) VALUES ( ?, ?, ?, ?, ?, ? )";
+
+        try (SQLiteStatement insertStopsStatement = db.compileStatement(sql)) {
             while ((nextLine = reader.readNext()) != null) {
-                ContentValues values = new ContentValues();
 
-                values.put(Stop.STOP_ID, nextLine[Stop.STOP_ID_INDEX]);
-                values.put(Stop.STOP_CODE, nextLine[Stop.STOP_CODE_INDEX]);
-                values.put(Stop.STOP_NAME, nextLine[Stop.STOP_NAME_INDEX]);
-                values.put(Stop.STOP_LAT, nextLine[Stop.STOP_LAT_INDEX]);
-                values.put(Stop.STOP_LON, nextLine[Stop.STOP_LON_INDEX]);
-                values.put(Stop.STOP_URL, nextLine[Stop.STOP_URL_INDEX]);
-
-                insertValues(db, Tables.STOP, values, nextLine);
+                insertStopsStatement.bindString(1, nextLine[Stop.STOP_ID_INDEX]);
+                insertStopsStatement.bindString(2, nextLine[Stop.STOP_CODE_INDEX]);
+                insertStopsStatement.bindString(3, nextLine[Stop.STOP_NAME_INDEX]);
+                insertStopsStatement.bindString(4, nextLine[Stop.STOP_LAT_INDEX]);
+                insertStopsStatement.bindString(5, nextLine[Stop.STOP_LON_INDEX]);
+                insertStopsStatement.bindString(6, nextLine[Stop.STOP_URL_INDEX]);
+                insertStopsStatement.executeInsert();
+                insertStopsStatement.clearBindings();
             }
+        } catch (SQLException e) {
+            Log.e(TAG, "insertStops: sql exception occurred.", e);
+            Log.d(TAG, "insertStops: nextLine: " + Arrays.toString(nextLine));
+            e.printStackTrace();
         } catch (IOException e) {
-            Log.e(TAG, "insertStops: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
+
         Log.d(TAG, "processFiles: Stops imported.");
     }
 
     private void insertFareRules(SQLiteDatabase db, CSVReader reader) {
-        String[] nextLine;
+        String[] nextLine = null;
 
-        try {
+        String sql = "INSERT OR REPLACE INTO " + Tables.FARE_RULE + " ( "
+                + FareRule.FARE_ID + ", "
+                + FareRule.ROUTE_ID
+                + " ) VALUES ( ?, ? )";
+
+        try (SQLiteStatement insertFareRulesStatement = db.compileStatement(sql)) {
             while ((nextLine = reader.readNext()) != null) {
-                ContentValues values = new ContentValues();
 
-                values.put(FareRule.FARE_ID, nextLine[FareRule.FARE_ID_INDEX]);
-                values.put(FareRule.ROUTE_ID, nextLine[FareRule.ROUTE_ID_INDEX]);
-
-                insertValues(db, Tables.FARE_RULE, values, nextLine);
+                insertFareRulesStatement.bindString(1, nextLine[FareRule.FARE_ID_INDEX]);
+                insertFareRulesStatement.bindString(2, nextLine[FareRule.ROUTE_ID_INDEX]);
+                insertFareRulesStatement.executeInsert();
+                insertFareRulesStatement.clearBindings();
             }
+
+        } catch (SQLException e) {
+            Log.e(TAG, "insertFareRules: sql exception occurred.", e);
+            Log.d(TAG, "insertFareRules: nextLine: " + Arrays.toString(nextLine));
+            e.printStackTrace();
         } catch (IOException e) {
-            Log.e(TAG, "insertFareRules: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
+
         Log.d(TAG, "processFiles: FareRules imported.");
     }
 
     private void insertTrips(SQLiteDatabase db, CSVReader reader) {
-        String[] nextLine;
+        String[] nextLine = null;
 
-        try {
+        String sql = "INSERT OR REPLACE INTO " + Tables.TRIP + " ( "
+                + Trip.ROUTE_ID + ", "
+                + Trip.SERVICE_ID + ", "
+                + Trip.TRIP_ID + ", "
+                + Trip.TRIP_HEADSIGN + ", "
+                + Trip.DIRECTION_ID + ", "
+                + Trip.BLOCK_ID + ", "
+                + Trip.SHAPE_ID + ", "
+                + Trip.WHEELCHAIR_ACCESSIBLE
+                + " ) VALUES ( ?, ?, ?, ?, ?, ?, ?, ? )";
+
+        try (SQLiteStatement insertTripsStatement = db.compileStatement(sql)) {
             while ((nextLine = reader.readNext()) != null) {
-                ContentValues values = new ContentValues();
 
-                values.put(Trip.ROUTE_ID, nextLine[Trip.ROUTE_ID_INDEX]);
-                values.put(Trip.SERVICE_ID, nextLine[Trip.SERVICE_ID_INDEX]);
-                values.put(Trip.TRIP_ID, nextLine[Trip.TRIP_ID_INDEX]);
-                values.put(Trip.TRIP_HEADSIGN, nextLine[Trip.TRIP_HEADSIGN_INDEX]);
-                values.put(Trip.DIRECTION_ID, nextLine[Trip.DIRECTION_ID_INDEX]);
-                values.put(Trip.BLOCK_ID, nextLine[Trip.BLOCK_ID_INDEX]);
-                values.put(Trip.SHAPE_ID, nextLine[Trip.SHAPE_ID_INDEX]);
-                values.put(Trip.WHEELCHAIR_ACCESSIBLE, nextLine[Trip.WHEELCHAIR_ACCESSIBLE_INDEX]);
-
-                insertValues(db, Tables.TRIP, values, nextLine);
+                insertTripsStatement.bindString(1, nextLine[Trip.ROUTE_ID_INDEX]);
+                insertTripsStatement.bindString(2, nextLine[Trip.SERVICE_ID_INDEX]);
+                insertTripsStatement.bindString(3, nextLine[Trip.TRIP_ID_INDEX]);
+                insertTripsStatement.bindString(4, nextLine[Trip.TRIP_HEADSIGN_INDEX]);
+                insertTripsStatement.bindString(5, nextLine[Trip.DIRECTION_ID_INDEX]);
+                insertTripsStatement.bindString(6, nextLine[Trip.BLOCK_ID_INDEX]);
+                insertTripsStatement.bindString(7, nextLine[Trip.SHAPE_ID_INDEX]);
+                insertTripsStatement.bindString(8, nextLine[Trip.WHEELCHAIR_ACCESSIBLE_INDEX]);
+                insertTripsStatement.executeInsert();
+                insertTripsStatement.clearBindings();
             }
+        } catch (SQLException e) {
+            Log.e(TAG, "insertTrips: sql exception occurred.", e);
+            Log.d(TAG, "insertTrips: nextLine: " + Arrays.toString(nextLine));
+            e.printStackTrace();
         } catch (IOException e) {
-            Log.e(TAG, "insertTrips: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
+
         Log.d(TAG, "processFiles: Trips imported.");
     }
 
     private void insertStopTimes(SQLiteDatabase db, CSVReader reader) {
-        String[] nextLine;
+        String[] nextLine = null;
 
-        try {
+        String sql = "INSERT OR REPLACE INTO " + Tables.STOP_TIME + " ( "
+                + StopTime.TRIP_ID + ", "
+                + StopTime.ARRIVAL_TIME + ", "
+                + StopTime.DEPARTURE_TIME + ", "
+                + StopTime.STOP_ID + ", "
+                + StopTime.STOP_SEQUENCE
+                + " ) VALUES ( ?, ?, ?, ?, ? )";
+
+        try (SQLiteStatement insertStopTimesStatement = db.compileStatement(sql)) {
             while ((nextLine = reader.readNext()) != null) {
-                ContentValues values = new ContentValues();
 
-                values.put(StopTime.TRIP_ID, nextLine[StopTime.TRIP_ID_INDEX]);
-                values.put(StopTime.ARRIVAL_TIME, nextLine[StopTime.ARRIVAL_TIME_INDEX]);
-                values.put(StopTime.DEPARTURE_TIME, nextLine[StopTime.DEPARTURE_TIME_INDEX]);
-                values.put(StopTime.STOP_ID, nextLine[StopTime.STOP_ID_INDEX]);
-                values.put(StopTime.STOP_SEQUENCE, nextLine[StopTime.STOP_SEQUENCE_INDEX]);
-
-                insertValues(db, Tables.STOP_TIME, values, nextLine);
+                insertStopTimesStatement.bindString(1, nextLine[StopTime.TRIP_ID_INDEX]);
+                insertStopTimesStatement.bindString(2, nextLine[StopTime.ARRIVAL_TIME_INDEX]);
+                insertStopTimesStatement.bindString(3, nextLine[StopTime.DEPARTURE_TIME_INDEX]);
+                insertStopTimesStatement.bindString(4, nextLine[StopTime.STOP_ID_INDEX]);
+                insertStopTimesStatement.bindString(5, nextLine[StopTime.STOP_SEQUENCE_INDEX]);
+                insertStopTimesStatement.executeInsert();
+                insertStopTimesStatement.clearBindings();
             }
+        } catch (SQLException e) {
+            Log.e(TAG, "insertStopTimes: sql exception occurred.", e);
+            Log.d(TAG, "insertStopTimes: nextLine: " + Arrays.toString(nextLine));
+            e.printStackTrace();
         } catch (IOException e) {
-            Log.e(TAG, "insertStopTimes: Error happened while parsing the csv file.", e);
             e.printStackTrace();
         }
+
         Log.d(TAG, "processFiles: StopTimes imported.");
     }
 
@@ -471,7 +582,25 @@ public class MainActivity extends Activity {
         final int CALENDAR_DATES_INDEX = (fileNames.indexOf("calendar_dates.txt"));
         final int CALENDARS_INDEX = (fileNames.indexOf("calendar.txt"));
 
-        db.beginTransaction();
+        SQLiteTransactionListener transactionListener = new SQLiteTransactionListener() {
+            @Override
+            public void onBegin() {
+                // TODO: 07/05/16 Perhaps show a loading indicator? Like a progress bar?
+                Log.d(TAG, "onBegin: Import started.");
+            }
+
+            @Override
+            public void onCommit() {
+                Log.d(TAG, "onCommit: Import committed!");
+            }
+
+            @Override
+            public void onRollback() {
+                Log.w(TAG, "onRollback: Import failed.");
+            }
+        };
+
+        db.beginTransactionWithListener(transactionListener);
         try {
 
             insertAgencies(db, readers.get(AGENCY_INDEX));
@@ -498,12 +627,13 @@ public class MainActivity extends Activity {
             db.endTransaction();
 
             db.setTransactionSuccessful();
-            Log.d(TAG, "processFiles: Import successful!");
         } finally {
             while (db.inTransaction()) {
                 db.endTransaction();
+                Log.d(TAG, "processFiles: transaction ended.");
             }
             db.close();
+            Log.d(TAG, "processFiles: database closed.");
         }
     }
 
