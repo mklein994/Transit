@@ -415,24 +415,26 @@ public class MainActivity extends Activity {
     private boolean downloadExists() {
         DownloadManager.Query query = new DownloadManager.Query();
         query.setFilterById(downloadReference);
-        Cursor cursor = manager.query(query);
+        boolean downloadExists;
+        try (Cursor cursor = manager.query(query)) {
 
-        boolean downloadExists = false;
+            downloadExists = false;
 
-        // check that the cursor managed to find the download
-        if (cursor.moveToFirst()) {
-            int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
-            if (status == DownloadManager.STATUS_SUCCESSFUL) {
-                String fileName = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
+            // check that the cursor managed to find the download
+            if (cursor.moveToFirst()) {
+                int status = cursor.getInt(cursor.getColumnIndex(DownloadManager.COLUMN_STATUS));
+                if (status == DownloadManager.STATUS_SUCCESSFUL) {
+                    String fileName = cursor.getString(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
 
-                //Log.d("fileName", fileName);
+                    //Log.d("fileName", fileName);
 
-                File file = new File(fileName);
+                    File file = new File(fileName);
 
-                downloadExists = file.exists();
-            } else {
-                downloadExists = false;
-                Log.e("Download Error", "Download file status is " + status);
+                    downloadExists = file.exists();
+                } else {
+                    downloadExists = false;
+                    Log.e("Download Error", "Download file status is " + status);
+                }
             }
             //cursor.getLong(cursor.getColumnIndex(DownloadManager.COLUMN_LOCAL_FILENAME));
         }
