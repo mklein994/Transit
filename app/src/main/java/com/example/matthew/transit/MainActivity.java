@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
@@ -642,6 +643,50 @@ public class MainActivity extends Activity {
             }
             db.close();
             Log.d(TAG, "processFiles: database closed.");
+        }
+
+        db = mTransitDatabaseHelper.getReadableDatabase();
+        try {
+            db.beginTransaction();
+            String sql = "select t.trip_id\n" +
+                    "	  ,t.service_id\n" +
+                    "	  ,t.trip_headsign\n" +
+                    "	  ,t.direction_id\n" +
+                    "	  ,t.block_id\n" +
+                    "	  ,t.shape_id\n" +
+                    "	  ,t.wheelchair_accessible\n" +
+                    "	  ,s.stop_name\n" +
+                    "	  ,st.arrival_time\n" +
+                    "from route as r\n" +
+                    "inner join trip as t\n" +
+                    "	on r.route_id = t.route_id\n" +
+                    "inner join calendar as c\n" +
+                    "	on t.service_id = c.service_id\n" +
+                    "left join calendar_date as cd\n" +
+                    "	on t.service_id = cd.service_id\n" +
+                    "inner join stop_time as st\n" +
+                    "	on t.trip_id = st.trip_id\n" +
+                    "inner join stop as s\n" +
+                    "	on st.stop_id = s.stop_id\n" +
+                    "where r.route_short_name = ?\n" +
+                    "and c.monday = ?\n" +
+                    "and cd.date <> ?\n" +
+                    "and t.direction_id = ?\n" +
+                    "and s.stop_name like ?\n" +
+                    "and strftime('%H:%M:%S', st.arrival_time) < time(?)";
+
+            String[] sqlArgs = new String[] {
+                    "", "", "", "", "", ""
+            };
+
+            try (Cursor cursor = db.rawQuery(sql, sqlArgs)) {
+                cursor.moveToFirst();
+                Log.v(TAG, DatabaseUtils.dumpCursorToString(cursor));
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+            db.close();
         }
     }
 
