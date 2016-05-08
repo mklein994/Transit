@@ -565,7 +565,7 @@ public class MainActivity extends Activity {
         // delete the database; start over
         deleteDatabase(DATABASE_NAME);
 
-        TransitDatabaseHelper mTransitDatabaseHelper = new TransitDatabaseHelper(getApplicationContext(), DATABASE_NAME);
+        final TransitDatabaseHelper mTransitDatabaseHelper = new TransitDatabaseHelper(getApplicationContext(), DATABASE_NAME);
         SQLiteDatabase db = mTransitDatabaseHelper.getWritableDatabase();
 
         ArrayList<String> fileNames = new ArrayList<>();
