@@ -119,7 +119,8 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_FARE_RULES = CREATE_TABLE + Tables.FARE_RULE + " (" +
             FareRule._ID + PRIMARY_KEY +
             FareRule.FARE_ID + TEXT_TYPE + References.FARE_ID + COMMA_SEP +
-            FareRule.ROUTE_ID + TEXT_TYPE + References.ROUTE_ID +
+            FareRule.ROUTE_ID + TEXT_TYPE + References.ROUTE_ID + COMMA_SEP +
+            "UNIQUE (" + FareRule.FARE_ID + COMMA_SEP + FareRule.ROUTE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_FARE_RULES =
