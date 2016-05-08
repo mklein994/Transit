@@ -482,20 +482,25 @@ public class MainActivity extends Activity {
     }
 
     private void processDownload() {
-        ParcelFileDescriptor pfd = null;
+        ParcelFileDescriptor pfd;
 
         try {
             // open a parcel file descriptor using the file just downloaded
             pfd = manager.openDownloadedFile(downloadReference);
+
+            File[] files = extractFiles(pfd);
+
+            processFiles(files);
+
+            pfd.close();
+
         } catch (FileNotFoundException e) {
+            Log.e(TAG, "processDownload: File was not found.", e);
+            e.printStackTrace();
+        } catch (IOException e) {
+            Log.e(TAG, "processDownload: Error closing parcel file descriptor", e);
             e.printStackTrace();
         }
-
-        //ArrayList<File> files = extractFiles(pfd);
-        File[] files = extractFiles(pfd);
-
-        processFiles(files);
-        //new DatabaseImportTask().execute(files);
     }
 
     /**
