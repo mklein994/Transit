@@ -4,17 +4,18 @@ import android.content.Context;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.provider.BaseColumns;
 
-import com.example.matthew.transit.TransitContract.Agency;
-import com.example.matthew.transit.TransitContract.Calendar;
-import com.example.matthew.transit.TransitContract.CalendarDate;
-import com.example.matthew.transit.TransitContract.FareAttribute;
-import com.example.matthew.transit.TransitContract.FareRule;
-import com.example.matthew.transit.TransitContract.Route;
-import com.example.matthew.transit.TransitContract.Shape;
-import com.example.matthew.transit.TransitContract.Stop;
-import com.example.matthew.transit.TransitContract.StopTime;
-import com.example.matthew.transit.TransitContract.Trip;
+import com.example.matthew.transit.TransitContract.AgencyColumns;
+import com.example.matthew.transit.TransitContract.CalendarColumns;
+import com.example.matthew.transit.TransitContract.CalendarDateColumns;
+import com.example.matthew.transit.TransitContract.FareAttributeColumns;
+import com.example.matthew.transit.TransitContract.FareRuleColumns;
+import com.example.matthew.transit.TransitContract.RouteColumns;
+import com.example.matthew.transit.TransitContract.ShapeColumns;
+import com.example.matthew.transit.TransitContract.StopColumns;
+import com.example.matthew.transit.TransitContract.StopTimeColumns;
+import com.example.matthew.transit.TransitContract.TripColumns;
 
 /**
  * Created by matthew on 29/04/16.
@@ -40,13 +41,13 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
     }
 
     private interface References {
-        String SERVICE_ID = " REFERENCES " + Tables.CALENDAR + "(" + Calendar.SERVICE_ID + ")";
-        //String CALENDAR_DATE_SERVICE_ID = " REFERENCES " + Tables.CALENDAR_DATE + "(" + CalendarDate.SERVICE_ID + ")";
-        String TRIP_ID = " REFERENCES " + Tables.TRIP + "(" + Trip.TRIP_ID + ")";
-        String ROUTE_ID = " REFERENCES " + Tables.ROUTE + "(" + Route.ROUTE_ID + ")";
-        String FARE_ID = " REFERENCES " + Tables.FARE_ATTRIBUTE + "(" + FareAttribute.FARE_ID + ")";
-        String SHAPE_ID = " REFERENCES " + Tables.SHAPE + "(" + Shape.SHAPE_ID + ")";
-        String STOP_ID = " REFERENCES " + Tables.STOP + "(" + Stop.STOP_ID + ")";
+        String SERVICE_ID = " REFERENCES " + Tables.CALENDAR + "(" + CalendarColumns.SERVICE_ID + ")";
+        //String CALENDAR_DATE_SERVICE_ID = " REFERENCES " + Tables.CALENDAR_DATE + "(" + CalendarDateColumns.SERVICE_ID + ")";
+        String TRIP_ID = " REFERENCES " + Tables.TRIP + "(" + TripColumns.TRIP_ID + ")";
+        String ROUTE_ID = " REFERENCES " + Tables.ROUTE + "(" + RouteColumns.ROUTE_ID + ")";
+        String FARE_ID = " REFERENCES " + Tables.FARE_ATTRIBUTE + "(" + FareAttributeColumns.FARE_ID + ")";
+        String SHAPE_ID = " REFERENCES " + Tables.SHAPE + "(" + ShapeColumns.SHAPE_ID + ")";
+        String STOP_ID = " REFERENCES " + Tables.STOP + "(" + StopColumns.STOP_ID + ")";
     }
 
     // helpers to prevent typos
@@ -63,117 +64,117 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
     private static final String PRIMARY_KEY = INTEGER_TYPE + " PRIMARY KEY AUTOINCREMENT" + COMMA_SEP;
 
     private static final String SQL_CREATE_AGENCIES = CREATE_TABLE + Tables.AGENCY + " (" +
-            Agency._ID + PRIMARY_KEY +
-            Agency.AGENCY_NAME + TEXT_TYPE + COMMA_SEP +
-            Agency.AGENCY_URL + TEXT_TYPE + COMMA_SEP +
-            Agency.AGENCY_TIMEZONE + TEXT_TYPE + COMMA_SEP +
-            Agency.AGENCY_LANG + TEXT_TYPE + COMMA_SEP +
-            Agency.AGENCY_PHONE + TEXT_TYPE +
+            BaseColumns._ID + PRIMARY_KEY +
+            AgencyColumns.AGENCY_NAME + TEXT_TYPE + COMMA_SEP +
+            AgencyColumns.AGENCY_URL + TEXT_TYPE + COMMA_SEP +
+            AgencyColumns.AGENCY_TIMEZONE + TEXT_TYPE + COMMA_SEP +
+            AgencyColumns.AGENCY_LANG + TEXT_TYPE + COMMA_SEP +
+            AgencyColumns.AGENCY_PHONE + TEXT_TYPE +
             " )";
 
     private static final String SQL_DELETE_AGENCIES =
             "DROP TABLE IF EXISTS " + Tables.AGENCY;
 
     private static final String SQL_CREATE_CALENDARS = CREATE_TABLE + Tables.CALENDAR + " (" +
-            Calendar._ID + PRIMARY_KEY +
-            Calendar.SERVICE_ID + TEXT_TYPE + COMMA_SEP +
-            Calendar.MONDAY + INTEGER_TYPE + COMMA_SEP +
-            Calendar.TUESDAY + INTEGER_TYPE + COMMA_SEP +
-            Calendar.WEDNESDAY + INTEGER_TYPE + COMMA_SEP +
-            Calendar.THURSDAY + INTEGER_TYPE + COMMA_SEP +
-            Calendar.FRIDAY + INTEGER_TYPE + COMMA_SEP +
-            Calendar.SATURDAY + INTEGER_TYPE + COMMA_SEP +
-            Calendar.SUNDAY + INTEGER_TYPE + COMMA_SEP +
-            Calendar.START_DATE + NUMERIC_TYPE + COMMA_SEP +
-            Calendar.END_DATE + NUMERIC_TYPE + COMMA_SEP +
-            "UNIQUE (" + Calendar.SERVICE_ID + ") ON CONFLICT REPLACE" +
+            BaseColumns._ID + PRIMARY_KEY +
+            CalendarColumns.SERVICE_ID + TEXT_TYPE + COMMA_SEP +
+            CalendarColumns.MONDAY + INTEGER_TYPE + COMMA_SEP +
+            CalendarColumns.TUESDAY + INTEGER_TYPE + COMMA_SEP +
+            CalendarColumns.WEDNESDAY + INTEGER_TYPE + COMMA_SEP +
+            CalendarColumns.THURSDAY + INTEGER_TYPE + COMMA_SEP +
+            CalendarColumns.FRIDAY + INTEGER_TYPE + COMMA_SEP +
+            CalendarColumns.SATURDAY + INTEGER_TYPE + COMMA_SEP +
+            CalendarColumns.SUNDAY + INTEGER_TYPE + COMMA_SEP +
+            CalendarColumns.START_DATE + NUMERIC_TYPE + COMMA_SEP +
+            CalendarColumns.END_DATE + NUMERIC_TYPE + COMMA_SEP +
+            "UNIQUE (" + CalendarColumns.SERVICE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_CALENDARS =
             "DROP TABLE IF EXISTS " + Tables.CALENDAR;
 
     private static final String SQL_CREATE_CALENDAR_DATES = CREATE_TABLE + Tables.CALENDAR_DATE + " (" +
-            CalendarDate._ID + PRIMARY_KEY +
-            CalendarDate.SERVICE_ID + TEXT_TYPE + COMMA_SEP +
-            CalendarDate.DATE + NUMERIC_TYPE + COMMA_SEP +
-            CalendarDate.EXCEPTION_TYPE + INTEGER_TYPE + COMMA_SEP +
-            "UNIQUE (" + CalendarDate.SERVICE_ID + ") ON CONFLICT REPLACE" +
+            BaseColumns._ID + PRIMARY_KEY +
+            CalendarDateColumns.SERVICE_ID + TEXT_TYPE + COMMA_SEP +
+            CalendarDateColumns.DATE + NUMERIC_TYPE + COMMA_SEP +
+            CalendarDateColumns.EXCEPTION_TYPE + INTEGER_TYPE + COMMA_SEP +
+            "UNIQUE (" + CalendarDateColumns.SERVICE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_CALENDAR_DATES =
             "DROP TABLE IF EXISTS " + Tables.CALENDAR_DATE;
 
     private static final String SQL_CREATE_FARE_ATTRIBUTES = CREATE_TABLE + Tables.FARE_ATTRIBUTE + " (" +
-            FareAttribute._ID + PRIMARY_KEY +
-            FareAttribute.FARE_ID + TEXT_TYPE + COMMA_SEP +
-            FareAttribute.PRICE + REAL_TYPE + COMMA_SEP +
-            FareAttribute.CURRENCY_TYPE + TEXT_TYPE + COMMA_SEP +
-            FareAttribute.PAYMENT_METHOD + INTEGER_TYPE + COMMA_SEP +
-            FareAttribute.TRANSFERS + INTEGER_TYPE + COMMA_SEP +
-            FareAttribute.TRANSFER_DURATION + INTEGER_TYPE + COMMA_SEP +
-            "UNIQUE (" + FareAttribute.FARE_ID + ") ON CONFLICT REPLACE" +
+            BaseColumns._ID + PRIMARY_KEY +
+            FareAttributeColumns.FARE_ID + TEXT_TYPE + COMMA_SEP +
+            FareAttributeColumns.PRICE + REAL_TYPE + COMMA_SEP +
+            FareAttributeColumns.CURRENCY_TYPE + TEXT_TYPE + COMMA_SEP +
+            FareAttributeColumns.PAYMENT_METHOD + INTEGER_TYPE + COMMA_SEP +
+            FareAttributeColumns.TRANSFERS + INTEGER_TYPE + COMMA_SEP +
+            FareAttributeColumns.TRANSFER_DURATION + INTEGER_TYPE + COMMA_SEP +
+            "UNIQUE (" + FareAttributeColumns.FARE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_FARE_ATTRIBUTES =
             "DROP TABLE IF EXISTS " + Tables.FARE_ATTRIBUTE;
 
     private static final String SQL_CREATE_FARE_RULES = CREATE_TABLE + Tables.FARE_RULE + " (" +
-            FareRule._ID + PRIMARY_KEY +
-            FareRule.FARE_ID + TEXT_TYPE + References.FARE_ID + COMMA_SEP +
-            FareRule.ROUTE_ID + TEXT_TYPE + References.ROUTE_ID + COMMA_SEP +
-            "UNIQUE (" + FareRule.FARE_ID + COMMA_SEP + FareRule.ROUTE_ID + ") ON CONFLICT REPLACE" +
+            BaseColumns._ID + PRIMARY_KEY +
+            FareRuleColumns.FARE_ID + TEXT_TYPE + References.FARE_ID + COMMA_SEP +
+            FareRuleColumns.ROUTE_ID + TEXT_TYPE + References.ROUTE_ID + COMMA_SEP +
+            "UNIQUE (" + FareRuleColumns.FARE_ID + COMMA_SEP + FareRuleColumns.ROUTE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_FARE_RULES =
             "DROP TABLE IF EXISTS " + Tables.FARE_RULE;
 
     private static final String SQL_CREATE_ROUTES = CREATE_TABLE + Tables.ROUTE + " (" +
-            Route._ID + PRIMARY_KEY +
-            Route.ROUTE_ID + TEXT_TYPE + COMMA_SEP +
-            Route.ROUTE_SHORT_NAME + TEXT_TYPE + COMMA_SEP +
-            Route.ROUTE_LONG_NAME + TEXT_TYPE + COMMA_SEP +
-            Route.ROUTE_TYPE + INTEGER_TYPE + COMMA_SEP +
-            Route.ROUTE_COLOR + TEXT_TYPE + COMMA_SEP +
-            Route.ROUTE_TEXT_COLOR + TEXT_TYPE + COMMA_SEP +
-            "UNIQUE (" + Route.ROUTE_ID + ") ON CONFLICT REPLACE" +
+            BaseColumns._ID + PRIMARY_KEY +
+            RouteColumns.ROUTE_ID + TEXT_TYPE + COMMA_SEP +
+            RouteColumns.ROUTE_SHORT_NAME + TEXT_TYPE + COMMA_SEP +
+            RouteColumns.ROUTE_LONG_NAME + TEXT_TYPE + COMMA_SEP +
+            RouteColumns.ROUTE_TYPE + INTEGER_TYPE + COMMA_SEP +
+            RouteColumns.ROUTE_COLOR + TEXT_TYPE + COMMA_SEP +
+            RouteColumns.ROUTE_TEXT_COLOR + TEXT_TYPE + COMMA_SEP +
+            "UNIQUE (" + RouteColumns.ROUTE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_ROUTES =
             "DROP TABLE IF EXISTS " + Tables.ROUTE;
 
     private static final String SQL_CREATE_SHAPES = CREATE_TABLE + Tables.SHAPE + " (" +
-            Shape._ID + PRIMARY_KEY +
-            Shape.SHAPE_ID + TEXT_TYPE + COMMA_SEP +
-            Shape.SHAPE_PT_LAT + REAL_TYPE + COMMA_SEP +
-            Shape.SHAPE_PT_LON + REAL_TYPE + COMMA_SEP +
-            Shape.SHAPE_PT_SEQUENCE + INTEGER_TYPE + COMMA_SEP +
-            "UNIQUE (" + Shape.SHAPE_ID + ") ON CONFLICT REPLACE" +
+            BaseColumns._ID + PRIMARY_KEY +
+            ShapeColumns.SHAPE_ID + TEXT_TYPE + COMMA_SEP +
+            ShapeColumns.SHAPE_PT_LAT + REAL_TYPE + COMMA_SEP +
+            ShapeColumns.SHAPE_PT_LON + REAL_TYPE + COMMA_SEP +
+            ShapeColumns.SHAPE_PT_SEQUENCE + INTEGER_TYPE + COMMA_SEP +
+            "UNIQUE (" + ShapeColumns.SHAPE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_SHAPES =
             "DROP TABLE IF EXISTS " + Tables.SHAPE;
 
     private static final String SQL_CREATE_STOPS = CREATE_TABLE + Tables.STOP + " (" +
-            Stop._ID + PRIMARY_KEY +
-            Stop.STOP_ID + TEXT_TYPE + COMMA_SEP +
-            Stop.STOP_CODE + TEXT_TYPE + COMMA_SEP +
-            Stop.STOP_NAME + TEXT_TYPE + COMMA_SEP +
-            Stop.STOP_LAT + REAL_TYPE + COMMA_SEP +
-            Stop.STOP_LON + REAL_TYPE + COMMA_SEP +
-            Stop.STOP_URL + TEXT_TYPE + COMMA_SEP +
-            "UNIQUE (" + Stop.STOP_ID + ") ON CONFLICT REPLACE" +
+            BaseColumns._ID + PRIMARY_KEY +
+            StopColumns.STOP_ID + TEXT_TYPE + COMMA_SEP +
+            StopColumns.STOP_CODE + TEXT_TYPE + COMMA_SEP +
+            StopColumns.STOP_NAME + TEXT_TYPE + COMMA_SEP +
+            StopColumns.STOP_LAT + REAL_TYPE + COMMA_SEP +
+            StopColumns.STOP_LON + REAL_TYPE + COMMA_SEP +
+            StopColumns.STOP_URL + TEXT_TYPE + COMMA_SEP +
+            "UNIQUE (" + StopColumns.STOP_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_STOPS =
             "DROP TABLE IF EXISTS " + Tables.STOP;
 
     private static final String SQL_CREATE_STOP_TIMES = CREATE_TABLE + Tables.STOP_TIME + " (" +
-            StopTime._ID + PRIMARY_KEY +
-            StopTime.TRIP_ID + TEXT_TYPE + References.TRIP_ID + COMMA_SEP +
-            StopTime.ARRIVAL_TIME + NUMERIC_TYPE + COMMA_SEP +
-            StopTime.DEPARTURE_TIME + NUMERIC_TYPE + COMMA_SEP +
-            StopTime.STOP_ID + TEXT_TYPE + References.STOP_ID + COMMA_SEP +
-            StopTime.STOP_SEQUENCE + INTEGER_TYPE +
+            BaseColumns._ID + PRIMARY_KEY +
+            StopTimeColumns.TRIP_ID + TEXT_TYPE + References.TRIP_ID + COMMA_SEP +
+            StopTimeColumns.ARRIVAL_TIME + NUMERIC_TYPE + COMMA_SEP +
+            StopTimeColumns.DEPARTURE_TIME + NUMERIC_TYPE + COMMA_SEP +
+            StopTimeColumns.STOP_ID + TEXT_TYPE + References.STOP_ID + COMMA_SEP +
+            StopTimeColumns.STOP_SEQUENCE + INTEGER_TYPE +
             //"UNIQUE (" + CalendarDate.SERVICE_ID + ") ON CONFLICT REPLACE" +
             " )";
 
@@ -181,16 +182,16 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
             "DROP TABLE IF EXISTS " + Tables.STOP_TIME;
 
     private static final String SQL_CREATE_TRIPS = CREATE_TABLE + Tables.TRIP + " (" +
-            Trip._ID + PRIMARY_KEY +
-            Trip.ROUTE_ID + TEXT_TYPE + References.ROUTE_ID + COMMA_SEP +
-            Trip.SERVICE_ID + TEXT_TYPE + References.SERVICE_ID + COMMA_SEP +
-            Trip.TRIP_ID + TEXT_TYPE + COMMA_SEP +
-            Trip.TRIP_HEADSIGN + TEXT_TYPE + COMMA_SEP +
-            Trip.DIRECTION_ID + INTEGER_TYPE + COMMA_SEP +
-            Trip.BLOCK_ID + TEXT_TYPE + COMMA_SEP +
-            Trip.SHAPE_ID + TEXT_TYPE + References.SHAPE_ID + COMMA_SEP +
-            Trip.WHEELCHAIR_ACCESSIBLE + INTEGER_TYPE + COMMA_SEP +
-            "UNIQUE (" + Trip.TRIP_ID + ") ON CONFLICT REPLACE" +
+            BaseColumns._ID + PRIMARY_KEY +
+            TripColumns.ROUTE_ID + TEXT_TYPE + References.ROUTE_ID + COMMA_SEP +
+            TripColumns.SERVICE_ID + TEXT_TYPE + References.SERVICE_ID + COMMA_SEP +
+            TripColumns.TRIP_ID + TEXT_TYPE + COMMA_SEP +
+            TripColumns.TRIP_HEADSIGN + TEXT_TYPE + COMMA_SEP +
+            TripColumns.DIRECTION_ID + INTEGER_TYPE + COMMA_SEP +
+            TripColumns.BLOCK_ID + TEXT_TYPE + COMMA_SEP +
+            TripColumns.SHAPE_ID + TEXT_TYPE + References.SHAPE_ID + COMMA_SEP +
+            TripColumns.WHEELCHAIR_ACCESSIBLE + INTEGER_TYPE + COMMA_SEP +
+            "UNIQUE (" + TripColumns.TRIP_ID + ") ON CONFLICT REPLACE" +
             " )";
 
     private static final String SQL_DELETE_TRIPS =
