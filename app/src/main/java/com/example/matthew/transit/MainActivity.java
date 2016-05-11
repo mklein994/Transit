@@ -35,7 +35,6 @@ import java.util.zip.ZipInputStream;
 public class MainActivity extends Activity {
     private static final String TAG = MainActivity.class.getName();
     private static final String FILE_NAME = "gtfs.zip";
-    private static final String DATABASE_NAME = "transit.db";
     private static DownloadManager manager = null;
     private static long downloadReference;
     private final BroadcastReceiver onNotificationClick = new BroadcastReceiver() {
@@ -208,9 +207,9 @@ public class MainActivity extends Activity {
     private void processFiles(File[] files) {
 
         // delete the database; start over
-        deleteDatabase(DATABASE_NAME);
+        deleteDatabase(TransitDatabaseHelper.DATABASE_NAME);
 
-        final TransitDatabaseHelper mTransitDatabaseHelper = new TransitDatabaseHelper(getApplicationContext(), DATABASE_NAME);
+        final TransitDatabaseHelper mTransitDatabaseHelper = new TransitDatabaseHelper(getApplicationContext());
         SQLiteDatabase db = mTransitDatabaseHelper.getWritableDatabase();
 
         ArrayList<String> fileNames = new ArrayList<>();

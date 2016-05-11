@@ -21,6 +21,7 @@ import com.example.matthew.transit.TransitContract.Trip;
  */
 public class TransitDatabaseHelper extends SQLiteOpenHelper {
 
+    protected static final String DATABASE_NAME = "transit.db";
     private static final int CUR_DATABASE_VERSION = 1;
 
     private final Context mContext;
@@ -195,8 +196,8 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
     private static final String SQL_DELETE_TRIPS =
             "DROP TABLE IF EXISTS " + Tables.TRIP;
 
-    public TransitDatabaseHelper(Context context, String databaseName) {
-        super(context, databaseName, null, CUR_DATABASE_VERSION);
+    public TransitDatabaseHelper(Context context) {
+        super(context, DATABASE_NAME, null, CUR_DATABASE_VERSION);
         mContext = context;
     }
 
@@ -265,5 +266,9 @@ public class TransitDatabaseHelper extends SQLiteOpenHelper {
     public void onConfigure(SQLiteDatabase db) {
         super.onConfigure(db);
         db.setForeignKeyConstraintsEnabled(true);
+    }
+
+    public static void deleteDatabase(Context context) {
+        context.deleteDatabase(DATABASE_NAME);
     }
 }
