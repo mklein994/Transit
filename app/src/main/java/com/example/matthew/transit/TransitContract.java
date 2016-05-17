@@ -1,14 +1,41 @@
 package com.example.matthew.transit;
 
+import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
  * Created by matthew on 29/04/16.
  */
 public final class TransitContract {
+
+    public static final String CONTENT_TYPE_APP_BASE = "provider.";
+
+    public static final String CONTENT_TYPE_BASE = "vnd.android.cursor.dir/vnd." + CONTENT_TYPE_APP_BASE;
+    public static final String CONTENT_ITEM_TYPE_BASE = "vnd.android.cursor.item/vnd." + CONTENT_TYPE_APP_BASE;
+
+    public static final String CONTENT_AUTHORITY = "com.example.matthew.transit";
+
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+
     // To prevent someone from accidentally instantiating the contract class,
     // give it an empty constructor.
     public TransitContract() {
+    }
+
+    public static String makeContentType(String id) {
+        if (id != null) {
+            return CONTENT_TYPE_BASE + id;
+        } else {
+            return null;
+        }
+    }
+
+    public static String makeContentItemType(String id) {
+        if (id != null) {
+            return CONTENT_ITEM_TYPE_BASE + id;
+        } else {
+            return null;
+        }
     }
 
     interface AgencyColumns {
@@ -114,6 +141,8 @@ public final class TransitContract {
 
     public static class Agency implements AgencyColumns, BaseColumns {
 
+        public static final String CONTENT_TYPE_ID = "agency";
+
         public static final int AGENCY_NAME_INDEX = 0;
         public static final int AGENCY_URL_INDEX = 1;
         public static final int AGENCY_TIMEZONE_INDEX = 2;
@@ -122,6 +151,8 @@ public final class TransitContract {
     }
 
     public static class Calendar implements CalendarColumns, BaseColumns {
+
+        public static final String CONTENT_TYPE_ID = "calendar";
 
         public static final int SERVICE_ID_INDEX = 0;
         public static final int MONDAY_INDEX = 1;
@@ -137,12 +168,16 @@ public final class TransitContract {
 
     public static class CalendarDate implements CalendarDateColumns, BaseColumns {
 
+        public static final String CONTENT_TYPE_ID = "calendar_date";
+
         public static final int SERVICE_ID_INDEX = 0;
         public static final int DATE_INDEX = 1;
         public static final int EXCEPTION_TYPE_INDEX = 2;
     }
 
     public static class FareAttribute implements FareAttributeColumns, BaseColumns {
+
+        public static final String CONTENT_TYPE_ID = "fare_attribute";
 
         public static final int FARE_ID_INDEX = 0;
         public static final int PRICE_INDEX = 1;
@@ -154,6 +189,8 @@ public final class TransitContract {
 
     public static class FareRule implements FareRuleColumns, BaseColumns {
 
+        public static final String CONTENT_TYPE_ID = "fare_rule";
+
         public static final int FARE_ID_INDEX = 0;
         public static final int ROUTE_ID_INDEX = 1;
     }
@@ -164,23 +201,37 @@ public final class TransitContract {
 
     public static class Route implements RouteColumns, BaseColumns {
 
+        public static final String CONTENT_TYPE_ID = "route";
+
         public static final int ROUTE_ID_INDEX = 0;
         public static final int ROUTE_SHORT_NAME_INDEX = 1;
         public static final int ROUTE_LONG_NAME_INDEX = 2;
         public static final int ROUTE_TYPE_INDEX = 3;
         public static final int ROUTE_COLOR_INDEX = 4;
         public static final int ROUTE_TEXT_COLOR_INDEX = 5;
+
+        public static String getRouteId(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
     }
 
     public static class Shape implements ShapeColumns, BaseColumns {
+
+        public static final String CONTENT_TYPE_ID = "shape";
 
         public static final int SHAPE_ID_INDEX = 0;
         public static final int SHAPE_PT_LAT_INDEX = 1;
         public static final int SHAPE_PT_LON_INDEX = 2;
         public static final int SHAPE_PT_SEQUENCE_INDEX = 3;
+
+        public static String getShapeId(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
     }
 
     public static class Stop implements StopColumns, BaseColumns {
+
+        public static final String CONTENT_TYPE_ID = "stop";
 
         public static final int STOP_ID_INDEX = 0;
         public static final int STOP_CODE_INDEX = 1;
@@ -188,20 +239,32 @@ public final class TransitContract {
         public static final int STOP_LAT_INDEX = 3;
         public static final int STOP_LON_INDEX = 4;
         public static final int STOP_URL_INDEX = 5;
+
+        public static String getStopId(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
     }
 
     public static class StopTime implements StopTimeColumns, BaseColumns {
+
+        public static final String CONTENT_TYPE_ID = "stop_time";
 
         public static final int TRIP_ID_INDEX = 0;
         public static final int ARRIVAL_TIME_INDEX = 1;
         public static final int DEPARTURE_TIME_INDEX = 2;
         public static final int STOP_ID_INDEX = 3;
         public static final int STOP_SEQUENCE_INDEX = 4;
+
+        public static String getStopTimeId(Uri uri) {
+            return uri.getPathSegments().get(1);
+        }
     }
 
     //Transfer
 
     public static class Trip implements TripColumns, BaseColumns {
+
+        public static final String CONTENT_TYPE_ID = "trip";
 
         public static final int ROUTE_ID_INDEX = 0;
         public static final int SERVICE_ID_INDEX = 1;
