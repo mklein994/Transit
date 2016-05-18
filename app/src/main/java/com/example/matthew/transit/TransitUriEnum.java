@@ -17,6 +17,7 @@ public enum TransitUriEnum {
     FARE_RULE_ID(501, "fare_rule/*", TransitContract.FareRule.CONTENT_TYPE_ID, true, null),
     ROUTES(600, "route", TransitContract.Route.CONTENT_TYPE_ID, false, TransitDatabaseHelper.Tables.ROUTE),
     ROUTE_ID(601, "route/*", TransitContract.Route.CONTENT_TYPE_ID, true, null),
+    SEARCH_ROUTES(602, "search_routes", TransitContract.Route.CONTENT_TYPE_ID, false, TransitDatabaseHelper.Tables.ROUTE),
     SHAPES(700, "shape", TransitContract.Shape.CONTENT_TYPE_ID, false, TransitDatabaseHelper.Tables.SHAPE),
     SHAPE_ID(701, "shape/*", TransitContract.Shape.CONTENT_TYPE_ID, true, null),
     STOP_TIMES(800, "stop_time", TransitContract.StopTime.CONTENT_TYPE_ID, false, TransitDatabaseHelper.Tables.STOP_TIME),

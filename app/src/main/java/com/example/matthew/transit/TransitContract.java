@@ -1,5 +1,6 @@
 package com.example.matthew.transit;
 
+import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -8,12 +9,15 @@ import android.provider.BaseColumns;
  */
 public final class TransitContract {
 
-    public static final String CONTENT_TYPE_APP_BASE = "provider.";
+    public static final String CONTENT_TYPE_APP_BASE = "provider";
 
-    public static final String CONTENT_TYPE_BASE = "vnd.android.cursor.dir/vnd." + CONTENT_TYPE_APP_BASE;
-    public static final String CONTENT_ITEM_TYPE_BASE = "vnd.android.cursor.item/vnd." + CONTENT_TYPE_APP_BASE;
+    public static final String CONTENT_TYPE_BASE = ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + CONTENT_TYPE_APP_BASE;
+    public static final String CONTENT_ITEM_TYPE_BASE = ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + CONTENT_TYPE_APP_BASE;
 
-    public static final String CONTENT_AUTHORITY = "com.example.matthew.transit";
+    //public static final String CONTENT_TYPE_BASE = "vnd.android.cursor.dir/vnd." + CONTENT_TYPE_APP_BASE;
+    //public static final String CONTENT_ITEM_TYPE_BASE = "vnd.android.cursor.item/vnd." + CONTENT_TYPE_APP_BASE;
+
+    public static final String CONTENT_AUTHORITY = "com.example.matthew.transit.provider";
 
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
@@ -201,6 +205,9 @@ public final class TransitContract {
 
     public static class Route implements RouteColumns, BaseColumns {
 
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath("route").build();
+
         public static final String CONTENT_TYPE_ID = "route";
 
         public static final int ROUTE_ID_INDEX = 0;
@@ -212,6 +219,10 @@ public final class TransitContract {
 
         public static String getRouteId(Uri uri) {
             return uri.getPathSegments().get(1);
+        }
+
+        public static Uri buildRouteUri(String routeId) {
+            return CONTENT_URI.buildUpon().appendPath(routeId).build();
         }
     }
 
@@ -274,6 +285,15 @@ public final class TransitContract {
         public static final int BLOCK_ID_INDEX = 5;
         public static final int SHAPE_ID_INDEX = 6;
         public static final int WHEELCHAIR_ACCESSIBLE_INDEX = 7;
+    }
+
+    public static class SearchRoutes {
+        public static final String PATH_SEARCH_ROUTES = "search_routes";
+
+        public static final String CONTENT_TYPE_ID = "search_routes";
+
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_SEARCH_ROUTES).build();
     }
 
     /*

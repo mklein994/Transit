@@ -352,7 +352,7 @@ public class MainActivity extends Activity {
         }
 
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        //setContentView(R.layout.activity_main);
 
         settings = getSharedPreferences("settings", 0);
 
@@ -362,10 +362,18 @@ public class MainActivity extends Activity {
 
         //if download exists...
         if (downloadExists()) {
-            processDownload();
+            if (!getDatabasePath(TransitDatabaseHelper.DATABASE_NAME).exists()) {
+                processDownload();
+            }
         } else {
             // later calls processDownload
             startDownload();
+        }
+
+        if (savedInstanceState == null) {
+            CursorLoaderListFragment routes = new CursorLoaderListFragment();
+            routes.setArguments(getIntent().getExtras());
+            getFragmentManager().beginTransaction().add(android.R.id.content, routes).commit();
         }
     }
 
